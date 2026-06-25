@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Comparison Tool</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <a href="/pokemon" class="back-btn">
+    ← Back
+</a>
+
+    <h1 class="page-title">
+        ⚔️ Comparison Tool
+    </h1>
+
+    <div class="compare-select">
+
+    <div class="pokemon-slot" onclick="openModal(1)">
+
+        <div class="plus-icon">+</div>
+
+        <p id="pokemon1-label">
+            Choose Pokémon
+        </p>
+
+    </div>
+
+    <div class="vs-text">VS</div>
+
+    <div class="pokemon-slot" onclick="openModal(2)">
+
+        <div class="plus-icon">+</div>
+
+        <p id="pokemon2-label">
+            Choose Pokémon
+        </p>
+
+    </div>
+
+</div>
+
+<div id="compare-container">
+
+    <button id="compare-btn"
+            onclick="comparePokemon()">
+
+        Compare
+
+    </button>
+
+    <div id="comparison-result">
+
+</div>
+
+</div>
+
+<div id="search-modal" class="search-modal">
+
+    <div class="search-box">
+
+        <input
+            type="text"
+            placeholder="Search Pokémon..."
+            id="pokemon-search">
+
+        <div id="suggestions">
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    let pokemon1Data = null;
+    let pokemon2Data = null;
+
+const pokemonList = [
+
+{% for pokemon in all_pokemon %}
+"{{ pokemon.name }}",
+{% endfor %}
+
+];
+
+let currentSlot = 0;
+
+function openModal(slot) {
+
+    currentSlot = slot;
+
+    document.getElementById(
+        "search-modal"
+    ).style.display = "flex";
+
+    document.getElementById(
+        "pokemon-search"
+    ).value = "";
+
+    const suggestions =
+    document.getElementById(
+        "suggestions"
+    );
+
+    suggestions.innerHTML = "";
+    suggestions.style.display = "none";  
+
+}
+
+const searchInput =
+document.getElementById("pokemon-search");
+
+searchInput.addEventListener("input", function(){
+
+    const value =
+    this.value.toLowerCase();
+
+    const suggestions =
+    document.getElementById("suggestions");
+
+    suggestions.innerHTML = "";
+
+    if(value.length === 0){
+
+        suggestions.style.display = "none";
+        return;
+
+    }
+
+    const matches =
+    pokemonList.filter(function(pokemon){
+
+        return pokemon.startsWith(value);
+
+    }).slice(0,10);
+
+    matches.forEach(function(pokemon){
+
+        const pokemonId =
+        pokemonList.indexOf(pokemon) + 1;
+
+        suggestions.innerHTML += `
+
+        <div class="suggestion-item"
+        onclick="selectPokemon('${pokemon}')">
+
+            <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png"
+            class="suggestion-sprite">
+
+            <div class="suggestion-info">
+
+                <span class="suggestion-name">
+                    ${pokemon.charAt(0).toUpperCase() + pokemon.slice(1)}
+                </span>
+
+                <span class="suggestion-id">
+                    #${String(pokemonId).padStart(3,'0')}
+                </span>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    suggestions.style.display =
+    matches.length ? "block" : "none";
+
+});
+
+async function selectPokemon(name) {
+
+    const response = await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${name}`
+    );
+
+    const pokemon = await response.json();
+
+    if (currentSlot === 1) {
+
+        pokemon1Data = pokemon;
+
+        document.querySelectorAll(".pokemon-slot")[0].innerHTML = `
+
+            <img
+            src="${pokemon.sprites.other['official-artwork'].front_default}"
+            class="selected-pokemon-image">
+
+            <h3 class="selected-pokemon-name">
+                ${pokemon.name}
+            </h3>
+
+            <p class="selected-pokemon-id">
+                #${pokemon.id.toString().padStart(3,'0')}
+            </p>
+
+        `;
+
+    }
+
+    else {
+
+        pokemon2Data = pokemon;
+
+        document.querySelectorAll(".pokemon-slot")[1].innerHTML = `
+
+            <img
+            src="${pokemon.sprites.other['official-artwork'].front_default}"
+            class="selected-pokemon-image">
+
+            <h3 class="selected-pokemon-name">
+                ${pokemon.name}
+            </h3>
+
+            <p class="selected-pokemon-id">
+                #${pokemon.id.toString().padStart(3,'0')}
+            </p>
+
+        `;
+
+    }
+
+    document.getElementById("search-modal").style.display = "none";
+
+    checkCompareButton();
+
+}
+
+function checkCompareButton() {
+
+    if (pokemon1Data && pokemon2Data) {
+
+        document.getElementById(
+            "compare-btn"
+        ).style.display = "inline-block";
+
+    }
+
+}
+
+function comparePokemon() {
+
+    buildComparisonCard(
+        document.querySelectorAll(".pokemon-slot")[0],
+        pokemon1Data,
+        pokemon2Data
+    );
+
+    buildComparisonCard(
+        document.querySelectorAll(".pokemon-slot")[1],
+        pokemon2Data,
+        pokemon1Data
+    );
+
+    let total1 = 0;
+    let total2 = 0;
+
+    pokemon1Data.stats.forEach(function(stat) {
+
+        total1 += stat.base_stat;
+
+    });
+
+    pokemon2Data.stats.forEach(function(stat) {
+
+        total2 += stat.base_stat;
+
+    });
+
+    let winner = "";
+
+    if (total1 > total2) {
+
+        winner = pokemon1Data.name;
+
+    }
+
+    else if (total2 > total1) {
+
+        winner = pokemon2Data.name;
+
+    }
+
+    else {
+
+        winner = "Tie";
+
+    }
+
+    document.getElementById(
+        "comparison-result"
+    ).innerHTML = `
+
+        <div class="winner-box">
+
+            <h2>
+                🏆 Stat Winner
+            </h2>
+
+            <h3>
+                ${winner}
+            </h3>
+
+            <p>
+                ${pokemon1Data.name}: ${total1}
+            </p>
+
+            <p>
+                ${pokemon2Data.name}: ${total2}
+            </p>
+
+            <div class="comparison-note">
+
+                This result is based on total base stats only.
+                In actual Pokémon battles, factors such as
+                type matchups, abilities, movesets, held items,
+                and battle strategy can significantly affect
+                the outcome.
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+function buildComparisonCard(
+    card,
+    pokemon,
+    opponent
+) {
+
+    let statsHTML = "";
+
+    for (let i = 0; i < pokemon.stats.length; i++) {
+
+        const stat =
+        pokemon.stats[i].base_stat;
+
+        const enemyStat =
+        opponent.stats[i].base_stat;
+
+        let color = "white";
+
+        if (stat > enemyStat) {
+
+            color = "#00ff66";
+
+        }
+
+        const statName =
+        pokemon.stats[i].stat.name
+        .replace("special-attack","Sp. Attack")
+        .replace("special-defense","Sp. Defense")
+        .toUpperCase();
+
+        statsHTML += `
+
+        <div class="pokemon-stat">
+
+            <div class="stat-header">
+
+                <span>${statName}</span>
+
+                <span>${stat}</span>
+
+            </div>
+
+            <div class="stat-bar-bg">
+
+                <div
+                class="stat-bar"
+
+                style="
+                width:${(stat/255)*100}%;
+                background:${color};
+                ">
+                </div>
+
+            </div>
+
+        </div>
+
+        `;
+
+    }
+
+    const types =
+    pokemon.types.map(type =>
+
+        `<span class="type-badge-small">
+            ${type.type.name}
+        </span>`
+
+    ).join("");
+
+    card.innerHTML = `
+
+    <button
+class="remove-pokemon"
+onclick="resetCard(${pokemon.id})">
+
+❌
+
+</button>
+
+        <img
+        src="${pokemon.sprites.other['official-artwork'].front_default}"
+        class="selected-pokemon-image">
+
+        <h3 class="selected-pokemon-name">
+            ${pokemon.name}
+        </h3>
+
+        <p class="selected-pokemon-id">
+            #${pokemon.id}
+        </p>
+
+        <div class="pokemon-details-section">
+
+            <div>
+                ${types}
+            </div>
+
+            <br>
+
+            <div class="info-row">
+
+                <span>Height</span>
+
+                <span>${pokemon.height}</span>
+
+            </div>
+
+            <div class="info-row">
+
+                <span>Weight</span>
+
+                <span>${pokemon.weight}</span>
+
+            </div>
+
+            ${statsHTML}
+
+        </div>
+
+    `;
+
+}
+
+function resetCard(id) {
+
+    if (
+        pokemon1Data &&
+        pokemon1Data.id === id
+    ) {
+
+        pokemon1Data = null;
+
+        document.querySelectorAll(
+            ".pokemon-slot"
+        )[0].innerHTML = `
+
+            <div class="plus-icon">+</div>
+
+            <p id="pokemon1-label">
+
+                Choose Pokémon
+
+            </p>
+
+        `;
+
+    }
+
+    else {
+
+        pokemon2Data = null;
+
+        document.querySelectorAll(
+            ".pokemon-slot"
+        )[1].innerHTML = `
+
+            <div class="plus-icon">+</div>
+
+            <p id="pokemon2-label">
+
+                Choose Pokémon
+
+            </p>
+
+        `;
+
+    }
+
+    document.getElementById(
+        "compare-container"
+    ).style.display = "block";
+
+}
+
+</script>
+
+</body>
+
+</html>

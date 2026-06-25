@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Type Chart</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+<div class="container">
+
+    <a href="/types" class="back-btn">
+        ← Back
+    </a>
+
+    <h1 class="page-title">
+        Pokémon Type Chart
+    </h1>
+
+    <div class="chart-legend">
+
+    <div class="legend-item">
+        <span class="legend-square super"></span>
+        Super Effective(2x)
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-square weak"></span>
+        Not Very Effective(0.5x)
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-triangle"></span>
+        No Effect(0x)
+    </div>
+
+    <div class="legend-item">
+        <span class="legend-circle"></span>
+        Neutral(1x)
+    </div>
+
+</div>
+
+<div class="chart-container">
+
+    <table class="type-chart">
+
+        <tr>
+
+            <th></th>
+
+            {% for type in types %}
+                <th>{{ type }}</th>
+            {% endfor %}
+
+        </tr>
+
+        {% for row_type in types %}
+
+        <tr>
+
+            <th>{{ row_type }}</th>
+
+            {% for col_type in types %}
+
+                <td>
+
+{% set damage = type_data[row_type]["damage_relations"] %}
+
+{% if col_type in damage["double_damage_to"] | map(attribute="name") | list %}
+
+    <span class="chart-symbol chart-super"></span>
+
+{% elif col_type in damage["half_damage_to"] | map(attribute="name") | list %}
+
+    <span class="chart-symbol chart-weak"></span>
+
+{% elif col_type in damage["no_damage_to"] | map(attribute="name") | list %}
+
+    <span class="chart-symbol chart-immune"></span>
+
+{% else %}
+
+    <span class="chart-symbol chart-neutral"></span>
+
+{% endif %}
+
+</td>
+
+            {% endfor %}
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</div>
+
+</div>
+
+</body>
+</html>

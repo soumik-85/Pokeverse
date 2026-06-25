@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Pokémon Master Challenge</title>
+
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div class="master-page">
+
+    <div class="master-overlay">
+
+        <a href="/quiz" class="back-btn">
+            ← Back
+        </a>
+
+        <div class="master-card">
+
+            <div class="master-icon">
+                🏆
+            </div>
+
+            <h1 class="master-title">
+                Pokémon Master Challenge
+            </h1>
+
+            <p class="master-subtitle">
+                Think you know Pokémon?
+            </p>
+
+            <div class="challenge-grid">
+
+                <div class="feature-box">
+                    🎲 Random Questions
+                </div>
+
+                <div class="feature-box">
+                    👤 Who's That Pokémon?
+                </div>
+
+                <div class="feature-box">
+                    ⚡ Type Quiz
+                </div>
+
+                <div class="feature-box">
+                    🔄 Evolution Quiz
+                </div>
+
+                <div class="feature-box">
+                    📖 Pokédex Trivia
+                </div>
+
+                <div class="feature-box">
+                    🏆 Final Trainer Rank
+                </div>
+
+            </div>
+
+            <p class="challenge-note">
+                ✨ Only true trainers can score 10/10 ✨
+            </p>
+
+            <a href="/quiz/play" class="start-btn">
+                Start Challenge
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

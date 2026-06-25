@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Comparison Result</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <a href="/compare" class="back-btn">
+        ← Back
+    </a>
+
+    <h1 class="page-title">
+        Pokémon Comparison
+    </h1>
+
+    <div class="comparison-grid">
+
+        <div class="comparison-card">
+
+            <h2>{{ pokemon1.name.title() }}</h2>
+
+            <img
+                src="{{ pokemon1.sprites.other['official-artwork'].front_default }}"
+                width="250">
+
+                <h3>Stats</h3>
+
+{% for stat in pokemon1.stats %}
+
+<div class="stat-box">
+
+    <div class="stat-label">
+
+        {{ stat.stat.name.title() }}
+
+        <span>{{ stat.base_stat }}</span>
+
+    </div>
+
+    <div class="bar-bg">
+
+        <div class="bar-fill"
+             style="width: {{ stat.width }}%;">
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+                </div>
+
+               <div class="comparison-card">
+
+             <h2> {{ pokemon2.name.title() }}</h2>
+
+             <img
+                src="{{ pokemon2.sprites.other['official-artwork'].front_default }}"
+                width="250">
+
+             <h3>Stats</h3>
+
+{% for stat in pokemon2.stats %}
+
+<div class="stat-box">
+
+    <div class="stat-label">
+
+        {{ stat.stat.name.title() }}
+
+        <span>{{ stat.base_stat }}</span>
+
+    </div>
+
+    <div class="bar-bg">
+
+        <div class="bar-fill"
+             style="width: {{ stat.width }}%;">
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}    
+
+            </div>
+
+        </div>
+
+        <div class="winner-box">
+
+    🏆 Winner:
+    {{ winner }}
+
+</div>
+
+    </body>
+
+</html>

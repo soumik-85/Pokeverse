@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Evolution Explorer</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static',
+          filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+    <a href="/pokemon" class="back-btn">
+        ← Back
+    </a>
+
+    <h1 class="page-title">
+        🧬 Evolution Explorer
+    </h1>
+
+    <div class="evolution-search">
+
+    <input
+        type="text"
+        id="pokemon-name"
+        placeholder="Enter Pokémon name">
+
+        <div class="search-divider"></div>
+
+    <button onclick="getEvolution()">
+
+        Explore
+
+    </button>
+
+</div>
+
+<div id="suggestions">
+
+</div>
+
+    <div id="evolution-result">
+
+    </div>
+
+<script>
+
+const pokemonList = [
+
+{% for pokemon in all_pokemon %}
+"{{ pokemon.name }}",
+{% endfor %}
+
+];
+
+</script>    
+
+<script>
+
+async function getEvolution() {
+
+    const name =
+    document.getElementById(
+        "pokemon-name"
+    ).value.toLowerCase();
+
+    const pokemon =
+    await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${name}`
+    ).then(r => r.json());
+
+    const species =
+    await fetch(
+        pokemon.species.url
+    ).then(r => r.json());
+
+    const chain =
+    await fetch(
+        species.evolution_chain.url
+    ).then(r => r.json());
+
+    let html = "";
+
+    let current =
+    chain.chain;
+
+    while(current) {
+
+        const evoName =
+        current.species.name;
+
+        const evoPokemon =
+        await fetch(
+        `https://pokeapi.co/api/v2/pokemon/${evoName}`
+        ).then(r => r.json());
+
+        html += `
+
+        <div class="evolution-card">
+
+            <img
+            src="${evoPokemon.sprites.other['official-artwork'].front_default}">
+
+            <h3>
+                ${evoName}
+            </h3>
+
+        </div>
+
+        `;
+
+        if (
+            current.evolves_to.length > 0
+        ) {
+
+            html += `
+            <div class="evolution-arrow">
+                →
+            </div>
+            `;
+
+            current =
+            current.evolves_to[0];
+
+        }
+
+        else {
+
+            current = null;
+
+        }
+
+        if(html.indexOf("evolution-arrow") === -1){
+
+    html += `
+
+    <div class="no-evolution-box">
+
+        <h3>
+            No Evolution Chain
+        </h3>
+
+        <p>
+            ${name.charAt(0).toUpperCase() + name.slice(1)}
+            does not have any evolutions.
+        </p>
+
+    </div>
+
+    `;
+
+}
+
+    }
+
+    document.getElementById(
+        "evolution-result"
+    ).innerHTML = html;
+
+}
+
+
+
+function selectPokemon(name){
+
+    document.getElementById(
+        "pokemon-name"
+    ).value = name;
+
+    document.getElementById(
+        "suggestions"
+    ).style.display = "none";
+
+}
+
+document.getElementById(
+    "pokemon-name"
+).addEventListener("input", function(){
+
+    const value =
+    this.value.toLowerCase();
+
+    const suggestions =
+    document.getElementById("suggestions");
+
+    suggestions.innerHTML = "";
+
+    if(value.length === 0){
+
+        suggestions.style.display = "none";
+        return;
+
+    }
+
+    const matches =
+    pokemonList.filter(function(pokemon){
+
+        return pokemon.startsWith(value);
+
+    }).slice(0,10);
+
+    matches.forEach(function(pokemon){
+
+        const pokemonId =
+        pokemonList.indexOf(pokemon) + 1;
+
+        suggestions.innerHTML += `
+
+        <div class="suggestion-item"
+        onclick="selectPokemon('${pokemon}')">
+
+            <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonId}.png"
+            class="suggestion-sprite">
+
+            <div class="suggestion-info">
+
+                <span class="suggestion-name">
+                    ${pokemon.charAt(0).toUpperCase() + pokemon.slice(1)}
+                </span>
+
+                <span class="suggestion-id">
+                    #${String(pokemonId).padStart(3,'0')}
+                </span>
+
+            </div>
+
+        </div>
+
+        `;
+
+    });
+
+    suggestions.style.display =
+    matches.length ? "block" : "none";
+
+});
+
+document.getElementById(
+    "pokemon-name"
+).addEventListener("input", function() {
+
+    const value =
+    this.value.toLowerCase();
+
+    const suggestions =
+    document.getElementById(
+        "suggestions"
+    );
+
+    suggestions.innerHTML = "";
+
+    pokemonList.forEach(function(pokemon) {
+
+        if (
+            pokemon.startsWith(value)
+        ) {
+
+            suggestions.innerHTML += `
+
+            <div class="suggestion-item"
+            onclick="selectPokemon('${pokemon}')">
+
+                ${pokemon}
+
+            </div>
+
+            `;
+
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+
+</html>

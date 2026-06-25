@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Challenge Complete</title>
+
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<div
+class="results-page"
+style="
+background-image:url('{{ url_for('static', filename='images/ranks/' ~ background) }}');
+">
+
+    <div class="results-overlay">
+
+        <div class="results-card">
+
+            <h1 class="results-title">
+                🏆 Challenge Complete
+            </h1>
+
+            <img
+            src="{{ url_for('static',
+            filename='images/ranks/' + badge) }}"
+            class="rank-badge">
+
+            <h2 class="score-display">
+                {{ score }}/10
+            </h2>
+
+            <h2 class="rank-name">
+                {{ rank }}
+            </h2>
+
+            <p class="rank-message">
+                {{ message }}
+            </p>
+
+            <a href="/quiz"
+            class="play-again-btn">
+
+                Back To Quiz Center
+
+            </a>
+
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Pokédex</title>
+
+    <link rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+   <body>
+
+    <a href="/pokemon" class="back-btn">
+    ← Back
+</a>
+
+    <h1 class="page-title">
+        National Pokédex
+    </h1>
+
+    <div class="search-container">
+
+    <input
+        type="text"
+        placeholder="Search Pokémon..."
+        class="search-bar"
+        id="searchInput">
+
+    <div id="suggestions" class="suggestions-box"></div>
+
+</div>
+
+    <div class="pokemon-grid">
+
+    {% for pokemon in pokemon_list %}
+
+    <a href="/pokemon/{{ pokemon.name }}?page={{ page }}" class="pokemon-link"> 
+
+    <div class="pokemon-card pokemon-item">
+
+        <img
+            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ start_number + loop.index }}.png"
+            alt="{{ pokemon.name }}">
+
+        <p class="pokemon-number">
+          #{{ "%03d"|format(start_number + loop.index) }}
+        </p>
+
+      <h3>{{ pokemon.name.title() }}</h3>
+
+    </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+<script>
+const pokemonList = [
+
+ {% for pokemon in all_pokemon %}
+"{{ pokemon.name }}",
+ {% endfor %}
+
+ ];
+</script>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+<div class="pagination">
+
+    {% if page > 1 %}
+        <a href="/pokedex?page={{ page - 1 }}" class="page-btn">
+            ← Previous
+        </a>
+    {% endif %}
+
+    <span class="page-number">
+        Page {{ page }}
+    </span>
+
+    <a href="/pokedex?page={{ page + 1 }}" class="page-btn">
+        Next →
+    </a>
+
+</div> 
+
+</body>
+
+
+
+</html>

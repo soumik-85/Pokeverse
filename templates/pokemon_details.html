@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>{{ pokemon.name.title() }}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+    {% if page %}
+    <a href="/pokedex?page={{ page }}" class="back-btn">
+        ← Back to Pokédex
+    </a>
+
+{% elif from_type %}
+    <a href="/types/{{ from_type }}" class="back-btn">
+        ← Back to Type
+    </a>
+
+{% else %}
+    <a href="/pokemon" class="back-btn">
+        ← Back
+    </a>
+{% endif %}
+
+    <div class="pokemon-header">
+
+    <h1 class="page-title">
+        {{ pokemon.name.title() }}
+    </h1>
+
+    <p class="pokemon-id">
+        #{{ "%03d"|format(pokemon.id) }}
+    </p>
+
+</div>
+
+    <div class="pokemon-details">
+
+        <div class="pokemon-image-section">
+
+            <img
+    src="{{ pokemon.sprites.other['official-artwork'].front_default }}"
+    alt="{{ pokemon.name }}">
+
+        </div>
+
+        <div class="pokemon-info-section">
+
+            <h2>Type</h2>
+
+<div class="type-container">
+
+    {% for type in pokemon.types %}
+
+    <span class="type-badge">
+        {{ type.type.name.title() }}
+    </span>
+
+    {% endfor %}
+
+</div>
+
+     <h2>Info</h2>
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <span>Height</span>
+        <strong>{{ pokemon.height }}</strong>
+    </div>
+
+    <div class="stat-card">
+        <span>Weight</span>
+        <strong>{{ pokemon.weight }}</strong>
+    </div>
+
+</div>
+
+            <h2>Stats</h2>
+
+<div class="stats-grid">
+
+    {% for stat in pokemon.stats %}
+
+    <div class="stat-card">
+
+        <span>{{ stat.stat.name.title() }}</span>
+
+        <strong>{{ stat.base_stat }}</strong>
+
+    </div>
+
+    {% endfor %}
+
+</div>
+
+            <h2>Abilities</h2>
+
+            <ul>
+                {% for ability in pokemon.abilities %}
+                    <li>
+                        {{ ability.ability.name.title() }}
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <h2>Evolution</h2>
+
+           <div class="evolution-box">
+    {{ next_evolution }}
+</div>
+
+        </div>
+
+    </div>
+
+    {% if random_mode %}
+
+<div class="generate-container">
+
+    <a href="/random/generate" class="generate-btn">
+        Random
+    </a>
+
+</div>
+
+{% endif %}
+
+</body>
+
+</html>

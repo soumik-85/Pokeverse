@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>{{ type_data.name.title() }}</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+
+</head>
+
+<body>
+
+<div class="container"
+     style="--type-color: {{ type_color }};">
+
+
+    <a href="/types" class="back-btn">
+        ← Back
+    </a>
+
+    <h1 class="page-title"
+    style="color: {{ type_color }};">
+
+    <img
+        src="{{ url_for('static',
+        filename='images/types/' + type_data.name + '.svg') }}"
+        class="title-icon">
+
+    {{ type_data.name.title() }} Type
+
+</h1>
+
+<div class="description-card">
+
+    <h3 style="color: var(--type-color);">
+        📖 Type Overview
+    </h3>
+
+    <p>
+        {{ type_description }}
+    </p>
+
+</div>
+
+    <div class="type-stats">
+
+    <div class="card info-card">
+
+    <h2 style="color: {{ type_color }};">
+        Matchups
+    </h2>
+
+    <h3>Strong Against</h3>
+
+    <div>
+
+    {% for type in type_data.damage_relations.double_damage_to %}
+
+        <span class="type-badge"
+              style="border-color: {{ type_color }};">
+
+            {{ type.name.title() }}
+
+        </span>
+
+    {% endfor %}
+
+    </div>
+
+    <h3 style="margin-top:20px;">
+        Weak Against
+    </h3>
+
+    <div>
+
+    {% for type in type_data.damage_relations.double_damage_from %}
+
+        <span class="type-badge"
+              style="border-color: {{ type_color }};">
+
+            {{ type.name.title() }}
+
+        </span>
+
+    {% endfor %}
+
+    </div>
+
+</div>
+
+<div class="card info-card mascot-card">
+
+    <h2 style="color: {{ type_color }};">
+        Mascot
+    </h2>
+
+    <img
+        src="{{ mascot.sprites.other['official-artwork'].front_default }}"
+        class="mascot-image"
+    >
+
+    <h3>
+        {{ mascot.name.title() }}
+    </h3>
+
+</div>
+
+    <div class="card info-card">
+
+        <h2 style="color: {{ type_color }};">
+    Pokémon Count
+</h2>
+
+        <div class="count-number">
+
+    {{ type_data.pokemon | length }}
+
+</div>
+
+<p>Total Pokémon</p>
+
+    </div>
+
+</div>
+
+<div class="card pokemon-list-card"
+     style="border-color: {{ type_color }};">
+
+    <h2 style="color: {{ type_color }};">
+    ⭐ Featured {{ type_data.name.title() }} Pokémon
+</h2>
+
+<div class="featured-grid">
+
+    {% for pokemon in featured_pokemon %}
+
+    <a href="/pokemon/{{ pokemon.name.lower() }}"
+       class="pokemon-card-link">
+
+        <div class="featured-card">
+
+            <img
+                src="{{ pokemon.image }}"
+                class="featured-image"
+            >
+
+            <h3>
+                {{ pokemon.name }}
+            </h3>
+
+        </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

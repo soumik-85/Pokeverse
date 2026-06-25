@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Pokémon Master Challenge</title>
+
+    <link
+    rel="stylesheet"
+    href="{{ url_for('static', filename='css/style.css') }}">
+
+</head>
+
+<body>
+
+<a href="/quiz/master" class="back-btn">
+    ← Quit Challenge
+</a>
+
+<div class="quiz-play-container">
+
+    <div class="progress-container">
+
+        <div class="progress-bar" id="progress-bar"></div>
+
+    </div>
+
+    <h2 class="question-counter" id="question-counter">
+        Question 1 / 10
+    </h2>
+
+    <h1 class="question-category">
+        👤 Who's That Pokémon?
+    </h1>
+
+    <div class="pokemon-question-card">
+
+        <img
+        id="pokemon-image"
+        src="{{ question.image }}"
+        class="quiz-pokemon-image">
+
+    </div>
+
+    <div class="answer-grid">
+
+        <form method="POST" action="/quiz/check">
+
+    <input
+    type="hidden"
+    name="selected_answer"
+    value="{{ question.options[0] }}">
+
+    <input
+    type="hidden"
+    name="correct_answer"
+    value="{{ question.correct_answer }}">
+
+    <button
+    type="submit"
+    class="answer-card"
+    id="option0">
+
+        {{ question.options[0] }}
+
+    </button>
+
+</form>
+
+<form method="POST" action="/quiz/check">
+
+    <input
+    type="hidden"
+    name="selected_answer"
+    value="{{ question.options[1] }}">
+
+    <input
+    type="hidden"
+    name="correct_answer"
+    value="{{ question.correct_answer }}">
+
+    <button
+    type="submit"
+    class="answer-card"
+    id="option1">
+
+        {{ question.options[1] }}
+
+    </button>
+
+</form>
+
+<form method="POST" action="/quiz/check">
+
+    <input
+    type="hidden"
+    name="selected_answer"
+    value="{{ question.options[2] }}">
+
+    <input
+    type="hidden"
+    name="correct_answer"
+    value="{{ question.correct_answer }}">
+
+    <button
+    type="submit"
+    class="answer-card"
+    id="option2">
+
+        {{ question.options[2] }}
+
+    </button>
+
+</form>
+
+<form method="POST" action="/quiz/check">
+
+    <input
+    type="hidden"
+    name="selected_answer"
+    value="{{ question.options[3] }}">
+
+    <input
+    type="hidden"
+    name="correct_answer"
+    value="{{ question.correct_answer }}">
+
+    <button
+    type="submit"
+    class="answer-card"
+    id="option3">
+
+        {{ question.options[3] }}
+
+    </button>
+
+</form>  
+
+<div id="correct-answer" hidden>
+
+    {{ question.correct_answer }}
+
+</div>
+
+    </div>
+
+   <div class="result-overlay" id="result-overlay">
+
+    <div class="result-modal">
+
+        <h2 class="correct-text" id="result-title">
+            ✅ Correct!
+        </h2>
+
+        <p id="result-answer">
+            It was Pikachu.
+        </p>
+
+        <p id="score-text">
+            Score: 0 / 10
+        </p>
+
+        <button 
+        class="next-btn"
+        id="next-question-btn">
+            Next Question
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+<script>
+    const questions = {{ questions | tojson }};
+
+    let currentQuestion = 0;
+
+    function loadQuestion(index){
+
+    const question =
+    questions[index];
+
+    document.getElementById(
+        "pokemon-image"
+    ).src = question.image;
+
+    document.getElementById(
+        "option0"
+    ).innerText =
+    question.options[0];
+
+    document.getElementById(
+        "option1"
+    ).innerText =
+    question.options[1];
+
+    document.getElementById(
+        "option2"
+    ).innerText =
+    question.options[2];
+
+    document.getElementById(
+        "option3"
+    ).innerText =
+    question.options[3];
+
+    document.getElementById(
+        "correct-answer"
+    ).innerText =
+    question.correct_answer;
+
+    document.getElementById(
+        "question-counter"
+    ).innerText =
+    `Question ${index + 1} / 10`;
+
+    document.getElementById(
+        "progress-bar"
+    ).style.width =
+    `${index * 10}%`;
+
+}
+
+
+loadQuestion(0);
+
+let score = 0;
+
+console.log(questions);   
+
+const answerCards =
+document.querySelectorAll(".answer-card");
+
+answerCards.forEach(card => {
+
+    card.addEventListener("click", (event) => {
+
+        event.preventDefault();
+
+        const selectedAnswer =
+        card.innerText.trim();
+
+        const modal =
+document.getElementById(
+    "result-overlay"
+);
+
+const resultTitle =
+document.getElementById(
+    "result-title"
+);
+
+const resultAnswer =
+document.getElementById(
+    "result-answer"
+);
+
+const correctAnswer =
+document.getElementById(
+    "correct-answer"
+).innerText.trim();
+
+if(selectedAnswer === correctAnswer){
+
+    resultTitle.innerText =
+    "✅ Correct!";
+
+    resultAnswer.innerText =
+    "It was " + correctAnswer;
+    score++;
+
+}
+else{
+
+    resultTitle.innerText =
+    "❌ Wrong!";
+
+    resultAnswer.innerText =
+    "Correct Answer: " +
+    correctAnswer;
+
+}
+
+document.getElementById(
+    "score-text"
+).innerText =
+`Score: ${score} / 10`;
+
+if(currentQuestion === 9){
+
+    document.getElementById(
+        "next-question-btn"
+    ).innerText =
+    "View Results";
+
+}
+else{
+
+    document.getElementById(
+        "next-question-btn"
+    ).innerText =
+    "Next Question";
+
+}
+
+modal.style.display = "flex";
+
+    });
+
+});
+
+const nextButton =
+document.getElementById(
+    "next-question-btn"
+);
+
+nextButton.addEventListener(
+    "click",
+    () => {
+
+        if(currentQuestion < 9){
+
+            currentQuestion++;
+
+            loadQuestion(
+                currentQuestion
+            );
+
+            document.getElementById(
+                "result-overlay"
+            ).style.display =
+            "none";
+
+        }
+
+        else{
+
+            console.log("Final Score:", score);
+
+            fetch(`/quiz/save-score/${score}`)
+            .then(() => {
+
+                window.location.href =
+                "/quiz/results";
+
+            });
+
+        }
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>

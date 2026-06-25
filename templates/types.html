@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pokémon Types</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+<body>
+
+
+    <div class="container">
+
+        <a href="/pokemon" class="back-btn">
+            ← Back
+        </a>
+
+        <a href="/type-chart" class="chart-btn">
+           <i class="bi bi-grid-3x3-gap-fill"></i>
+        </a>
+
+        <h1 class="page-title">
+            Pokémon Types
+        </h1>
+
+        <div class="types-grid">
+
+            <a href="/types/normal" class="type-link">
+    <div class="type-card normal">
+        <img src="{{ url_for('static', filename='images/types/normal.svg') }}" class="type-icon">
+        <div class="type-name">Normal</div>
+    </div>
+</a>
+
+<a href="/types/fire" class="type-link">
+    <div class="type-card fire">
+        <img src="{{ url_for('static', filename='images/types/fire.svg') }}" class="type-icon">
+        <div class="type-name">Fire</div>
+    </div>
+</a>
+
+<a href="/types/water" class="type-link">
+    <div class="type-card water">
+        <img src="{{ url_for('static', filename='images/types/water.svg') }}" class="type-icon">
+        <div class="type-name">Water</div>
+    </div>
+</a>
+
+<a href="/types/electric" class="type-link">
+    <div class="type-card electric">
+        <img src="{{ url_for('static', filename='images/types/electric.svg') }}" class="type-icon">
+        <div class="type-name">Electric</div>
+    </div>
+</a>
+
+<a href="/types/grass" class="type-link">
+    <div class="type-card grass">
+        <img src="{{ url_for('static', filename='images/types/grass.svg') }}" class="type-icon">
+        <div class="type-name">Grass</div>
+    </div>
+</a>
+
+<a href="/types/ice" class="type-link">
+    <div class="type-card ice">
+        <img src="{{ url_for('static', filename='images/types/ice.svg') }}" class="type-icon">
+        <div class="type-name">Ice</div>
+    </div>
+</a>
+
+<a href="/types/fighting" class="type-link">
+    <div class="type-card fighting">
+        <img src="{{ url_for('static', filename='images/types/fighting.svg') }}" class="type-icon">
+        <div class="type-name">Fighting</div>
+    </div>
+</a>
+
+<a href="/types/poison" class="type-link">
+    <div class="type-card poison">
+        <img src="{{ url_for('static', filename='images/types/poison.svg') }}" class="type-icon">
+        <div class="type-name">Poison</div>
+    </div>
+</a>
+
+<a href="/types/ground" class="type-link">
+    <div class="type-card ground">
+        <img src="{{ url_for('static', filename='images/types/ground.svg') }}" class="type-icon">
+        <div class="type-name">Ground</div>
+    </div>
+</a>
+
+<a href="/types/flying" class="type-link">
+    <div class="type-card flying">
+        <img src="{{ url_for('static', filename='images/types/flying.svg') }}" class="type-icon">
+        <div class="type-name">Flying</div>
+    </div>
+</a>
+
+<a href="/types/psychic" class="type-link">
+    <div class="type-card psychic">
+        <img src="{{ url_for('static', filename='images/types/psychic.svg') }}" class="type-icon">
+        <div class="type-name">Psychic</div>
+    </div>
+</a>
+
+<a href="/types/bug" class="type-link">
+    <div class="type-card bug">
+        <img src="{{ url_for('static', filename='images/types/bug.svg') }}" class="type-icon">
+        <div class="type-name">Bug</div>
+    </div>
+</a>
+
+<a href="/types/rock" class="type-link">
+    <div class="type-card rock">
+        <img src="{{ url_for('static', filename='images/types/rock.svg') }}" class="type-icon">
+        <div class="type-name">Rock</div>
+    </div>
+</a>
+
+<a href="/types/ghost" class="type-link">
+    <div class="type-card ghost">
+        <img src="{{ url_for('static', filename='images/types/ghost.svg') }}" class="type-icon">
+        <div class="type-name">Ghost</div>
+    </div>
+</a>
+
+<a href="/types/dragon" class="type-link">
+    <div class="type-card dragon">
+        <img src="{{ url_for('static', filename='images/types/dragon.svg') }}" class="type-icon">
+        <div class="type-name">Dragon</div>
+    </div>
+</a>
+
+<a href="/types/dark" class="type-link">
+    <div class="type-card dark">
+        <img src="{{ url_for('static', filename='images/types/dark.svg') }}" class="type-icon">
+        <div class="type-name">Dark</div>
+    </div>
+</a>
+
+<a href="/types/steel" class="type-link">
+    <div class="type-card steel">
+        <img src="{{ url_for('static', filename='images/types/steel.svg') }}" class="type-icon">
+        <div class="type-name">Steel</div>
+    </div>
+</a>
+
+<a href="/types/fairy" class="type-link">
+    <div class="type-card fairy">
+        <img src="{{ url_for('static', filename='images/types/fairy.svg') }}" class="type-icon">
+        <div class="type-name">Fairy</div>
+    </div>
+</a>
+
+        </div>
+
+    </div>
+
+</body>
+</html>
