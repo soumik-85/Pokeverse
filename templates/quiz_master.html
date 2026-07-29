@@ -67,8 +67,10 @@
                 ✨ Only true trainers can score 10/10 ✨
             </p>
 
-            <a href="/quiz/play" class="start-btn">
-                Start Challenge
+            <a href="/quiz/play"
+             class="start-btn"
+             id="start-challenge">
+            Start Challenge
             </a>
 
         </div>
@@ -76,6 +78,30 @@
     </div>
 
 </div>
+
+<div id="loading-overlay">
+
+    <div class="loading-modal">
+
+        <div class="pokeball-loader"></div>
+
+        <h2>Preparing Your Challenge...</h2>
+
+        <p>Please wait...</p>
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("start-challenge").addEventListener("click", function(){
+
+    document.getElementById("loading-overlay").style.display = "flex";
+
+});
+
+</script>
 
 </body>
 

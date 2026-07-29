@@ -1,12 +1,17 @@
 function scrollToFeatures() {
-    const features = document.getElementById("features");
 
-    if (features) {
-        features.scrollIntoView({
+    const explore = document.getElementById("explore");
+
+    if (explore) {
+
+        explore.scrollIntoView({
             behavior: "smooth"
         });
+
     }
+
 }
+
 
 const searchInput = document.getElementById("searchInput");
 const suggestions = document.getElementById("suggestions");

@@ -1,85 +1,376 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
     <title>PokeVerse</title>
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/home.css') }}">
+
 </head>
+
 <body>
 
-    <nav class="navbar">
-        <div class="logo">POKÉVERSE</div>
+<!-- ================= NAVBAR ================= -->
 
-        <ul class="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#">Pokémon</a></li>
-            <li><a href="#">World</a></li>
-            <li><a href="#">Media</a></li>
-            <li><a href="#">Timeline</a></li>
-        </ul>
-    </nav>
+<nav class="navbar">
 
-    <div class="hero">
+    <div class="logo">
 
-    <h1 class="background-text">POKÉMON</h1>
+        <img src="{{ url_for('static', filename='images/pokeball.svg') }}">
+
+        <span>POKÉVERSE</span>
+
+    </div>
+
+    <ul>
+
+        <li><a class="active" href="/">Home</a></li>
+
+        <li><a href="/pokemon">Pokémon</a></li>
+
+        <li><a href="#">World</a></li>
+
+        <li><a href="#">Media</a></li>
+
+        <li><a href="#">Timeline</a></li>
+
+    </ul>
+
+</nav>
+
+<!-- ================= HERO ================= -->
+
+<section class="hero">
 
     <div class="hero-left">
-        <img
-            src="{{ url_for('static', filename='images/ash-pikachu.png') }}"
-            alt="Ash and Pikachu"
-            class="hero-image"
-        >
+
+        <img src="{{ url_for('static', filename='images/ash-pikachu.png') }}"
+             class="hero-image">
+
     </div>
 
     <div class="hero-right">
 
-        <h1 class="pokemon-title">POKÉVERSE</h1>
+        <h1><span class="yellow">POKÉ</span>VERSE</h1>
 
-        <p class="tagline">
-            Explore the Entire Pokémon Universe
+        <h2>
+
+            Your Ultimate Pokémon World
+
+        </h2>
+
+        <p>
+
+            Discover every Pokémon, explore every region,
+
+            master every type, uncover evolution chains
+
+            and begin your adventure.
+
         </p>
 
-        <button class="explore-btn" onclick="scrollToFeatures()">
-    Start Exploring
-</button>
+        <div class="hero-buttons">
 
-    </div>
+            <button class="explore-btn" onclick="scrollToFeatures()">
 
-</div>
+                Start Exploring
 
-<section class="features" id="features">
+            </button>
 
-    <h2>Choose Your Adventure</h2>
 
-    <div class="feature-grid">
-
-        <a href="/pokemon" class="card-link">
-            <div class="card">
-                <h3>🐭 Pokémon</h3>
-                <p>Pokédex, Evolutions, Battle Simulator, Types and more.</p>
-            </div>
-        </a>
-
-        <div class="card">
-            <h3>🌍 World</h3>
-            <p>Regions, Gym Leaders and Champions.</p>
-        </div>
-
-        <div class="card">
-            <h3>🎬 Media</h3>
-            <p>Movies and Anime Series.</p>
-        </div>
-
-        <div class="card">
-            <h3>📜 Timeline</h3>
-            <p>The complete history of Pokémon.</p>
         </div>
 
     </div>
 
 </section>
 
+<!-- ================= STATS ================= -->
+
+<section class="stats-section">
+
+    <div class="stats-container">
+
+        <div class="stat-item">
+
+            <div class="stat-icon">
+                <img src="{{ url_for('static', filename='images/icons/pokeball.svg') }}">
+            </div>
+
+            <div class="stat-info">
+
+                <h2>1025+</h2>
+
+                <h3>Pokémon</h3>
+
+                <p>And counting...</p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-divider"></div>
+
+        <div class="stat-item">
+
+            <div class="stat-icon">
+                <img src="{{ url_for('static', filename='images/icons/type.svg') }}">
+            </div>
+
+            <div class="stat-info">
+
+                <h2>18</h2>
+
+                <h3>Types</h3>
+
+                <p>Unique Types</p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-divider"></div>
+
+        <div class="stat-item">
+
+            <div class="stat-icon">
+                <img src="{{ url_for('static', filename='images/icons/world.svg') }}">
+            </div>
+
+            <div class="stat-info">
+
+                <h2>9</h2>
+
+                <h3>Regions</h3>
+
+                <p>Across the World</p>
+
+            </div>
+
+        </div>
+
+        <div class="stat-divider"></div>
+
+        <div class="stat-item">
+
+            <div class="stat-icon">
+                <img src="{{ url_for('static', filename='images/icons/trophy.svg') }}">
+            </div>
+
+            <div class="stat-info">
+
+                <h2>4</h2>
+
+                <h3>Quiz Modes</h3>
+
+                <p>Test your Knowledge</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- ================= DIVIDER ================= -->
+
+<div class="section-divider">
+
+    <span></span>
+
+    <div class="mini-pokeball">
+
+        <div class="pokeball-line"></div>
+
+        <div class="pokeball-center"></div>
+
+    </div>
+
+    <span></span>
+
+</div>
+
+<!-- ================= TITLE ================= -->
+
+<section class="section-heading" id="explore">
+
+    <h2>
+
+        Explore <span>PokeVerse</span>
+
+    </h2>
+
+    <p>
+
+        Everything a Pokémon Trainer needs,
+
+        in one place.
+
+    </p>
+
+</section>
+
+<!-- ================= FEATURE CARDS ================= -->
+
+<section class="feature-grid">
+
+<!-- Pokemon -->
+
+<a href="/pokemon" class="feature-card">
+
+    <img src="{{ url_for('static', filename='images/cards/pikachu.jpg') }}">
+
+    <div class="card-content">
+
+        <h3>Pokémon</h3>
+
+        <p>
+
+            Explore the Pokédex,
+
+            Evolutions,
+
+            Types,
+
+            Comparison Tool,
+
+            Quiz and more.
+
+        </p>
+
+        <div class="card-arrow">
+
+    →
+
+</div>
+
+    </div>
+
+</a>
+
+<!-- World -->
+
+<div class="feature-card">
+
+    <img src="{{ url_for('static', filename='images/cards/world.png') }}">
+
+    <div class="card-content">
+
+        <h3>World</h3>
+
+        <p>
+
+            Explore every region,
+
+            Gym Leader,
+
+            Champion
+
+            and more.
+
+        </p>
+
+        <div class="card-arrow">
+
+    →
+
+</div>
+
+    </div>
+
+</div>
+
+<!-- Media -->
+
+<div class="feature-card">
+
+    <img src="{{ url_for('static', filename='images/cards/media.jpg') }}">
+
+    <div class="card-content">
+
+        <h3>Media</h3>
+
+        <p>
+
+            Movies,
+
+            Anime,
+
+            Specials
+
+            and everything Pokémon.
+
+        </p>
+
+        <div class="card-arrow">
+
+    →
+
+</div>
+
+    </div>
+
+</div>
+
+<!-- Timeline -->
+
+<div class="feature-card">
+
+    <img src="{{ url_for('static', filename='images/cards/starters.jpg') }}">
+
+    <div class="card-content">
+
+        <h3>Timeline</h3>
+
+        <p>
+
+            Journey through every generation
+
+            of Pokémon history.
+
+        </p>
+
+        <div class="card-arrow">
+
+    →
+
+</div>
+
+    </div>
+
+</div>
+
+</section>
+
+<!-- ================= FOOTER ================= -->
+
+<footer>
+
+    <h2>POKÉVERSE</h2>
+
+    <p>
+
+        Explore.
+
+        Learn.
+
+        Battle.
+
+        Repeat.
+
+    </p>
+
+</footer>
+
 <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 </body>
+
 </html>

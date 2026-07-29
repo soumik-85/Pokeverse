@@ -196,17 +196,110 @@ def generate_who_pokemon_question():
         "options": options
     }
 
+def generate_type_question():
+
+    pokemon_id = random.randint(1, 1025)
+
+    pokemon = requests.get(
+        f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
+    ).json()
+
+    pokemon_name = pokemon["name"].title()
+
+    correct_type = pokemon["types"][0]["type"]["name"].title()
+
+    image = pokemon[
+        "sprites"
+    ][
+        "other"
+    ][
+        "official-artwork"
+    ][
+        "front_default"
+    ]
+
+    options = [correct_type]
+
+    while len(options) < 4:
+
+        wrong_type = random.choice(TYPES)
+
+        if wrong_type not in options:
+
+            options.append(wrong_type)
+
+    random.shuffle(options)
+
+    return {
+        "question": f"What is {pokemon_name}'s primary type?",
+        "image": image,
+        "correct_answer": correct_type,
+        "options": options
+    }
+
+def generate_evolution_question():
+
+    while True:
+
+        pokemon_id = random.randint(1, 1025)
+
+        pokemon = requests.get(
+            f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}"
+        ).json()
+
+        next_evolution = get_next_evolution(pokemon)
+
+        if next_evolution != "No Further Evolution":
+            break
+
+    image = pokemon["sprites"]["other"]["official-artwork"]["front_default"]
+
+    correct_answer = next_evolution
+
+    options = [correct_answer]
+
+    while len(options) < 4:
+
+        wrong_name = random.choice(all_pokemon_names)
+
+        if wrong_name not in options:
+
+            options.append(wrong_name)
+
+    random.shuffle(options)
+
+    return {
+        "question": f"Who does {pokemon['name'].title()} evolve into?",
+        "image": image,
+        "correct_answer": correct_answer,
+        "options": options
+    }
+
 def generate_quiz_questions():
 
-        questions = []
+    questions = []
 
-        for i in range(10):
-
-          questions.append(
+    # 4 Pokémon Identification
+    for _ in range(4):
+        questions.append(
             generate_who_pokemon_question()
         )
 
-        return questions
+    # 3 Primary Type
+    for _ in range(3):
+        questions.append(
+            generate_type_question()
+        )
+
+    # 3 Evolution
+    for _ in range(3):
+        questions.append(
+            generate_evolution_question()
+        )
+
+    random.shuffle(questions)
+
+    return questions
 
 @app.route("/")
 def home():
@@ -609,8 +702,37 @@ def quiz_results():
 def save_score(score):
 
     session["score"] = score
-
     return "", 204
+
+@app.route("/quiz/quiz_who_pokemon")
+def who_pokemon():
+
+    question = generate_who_pokemon_question()
+
+    return render_template(
+        "quiz_who_pokemon.html",
+        question=question
+    )
+
+@app.route("/quiz/type")
+def type_quiz():
+
+    question = generate_type_question()
+
+    return render_template(
+        "type_quiz.html",
+        question=question
+    )
+
+@app.route("/quiz/evolution")
+def evolution_quiz():
+
+    question = generate_evolution_question()
+
+    return render_template(
+        "evolution_quiz.html",
+        question=question
+    )
 
 if __name__ == "__main__":
     app.run(debug=True)

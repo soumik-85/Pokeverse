@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Type Quiz</title>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<a href="/quiz" class="back-btn">
+    ← Back
+</a>
+
+<div class="quiz-play-container">
+
+    <h1 class="question-category">
+       🔥 Type Quiz
+    </h1>
+
+    <div class="pokemon-question-card">
+
+        <img
+        src="{{ question.image }}"
+        class="quiz-pokemon-image">
+
+    </div>
+
+    <div class="answer-grid">
+
+        <button class="answer-card">
+            {{ question.options[0] }}
+        </button>
+
+        <button class="answer-card">
+            {{ question.options[1] }}
+        </button>
+
+        <button class="answer-card">
+            {{ question.options[2] }}
+        </button>
+
+        <button class="answer-card">
+            {{ question.options[3] }}
+        </button>
+
+    </div>
+
+    <div
+    id="correct-answer"
+    hidden>
+
+        {{ question.correct_answer }}
+
+    </div>
+
+</div>
+
+<div
+id="result-overlay"
+class="result-overlay"
+style="display:none;">
+
+    <div class="result-modal">
+
+        <h2
+        class="correct-text"
+        id="result-title">
+
+            ✅ Correct!
+
+        </h2>
+
+        <p id="result-answer">
+
+            It was Pikachu.
+
+        </p>
+
+        <button
+        class="next-btn"
+        id="next-btn"
+        onclick="location.reload()">
+
+            Next Question
+
+        </button>
+
+        <br><br>
+
+        <button
+        class="next-btn"
+        onclick="window.location.href='/quiz'">
+
+            Quit
+
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+const buttons =
+document.querySelectorAll("button");
+
+const correctAnswer =
+document.getElementById(
+    "correct-answer"
+).innerText.trim();
+
+const modal =
+document.getElementById(
+    "result-overlay"
+);
+
+const resultTitle =
+document.getElementById(
+    "result-title"
+);
+
+const resultAnswer =
+document.getElementById(
+    "result-answer"
+);
+
+buttons.forEach(button => {
+
+    if(
+        button.id !== "next-btn"
+    ){
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                const selectedAnswer =
+                button.innerText.trim();
+
+                if(
+                    selectedAnswer ===
+                    correctAnswer
+                ){
+
+                    resultTitle.innerText =
+                    "✅ Correct!";
+
+                    resultAnswer.innerText =
+                    "It was " +
+                    correctAnswer;
+
+                }
+                else{
+
+                    resultTitle.innerText =
+                    "❌ Wrong!";
+
+                    resultAnswer.innerText =
+                    "Correct Type: " +
+                    correctAnswer;
+
+                }
+
+                modal.style.display =
+                "flex";
+
+            }
+        );
+
+    }
+
+});
+
+</script>
+
+</body>
+
+</html>

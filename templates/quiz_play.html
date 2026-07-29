@@ -29,10 +29,6 @@
         Question 1 / 10
     </h2>
 
-    <h1 class="question-category">
-        👤 Who's That Pokémon?
-    </h1>
-
     <div class="pokemon-question-card">
 
         <img
@@ -41,6 +37,14 @@
         class="quiz-pokemon-image">
 
     </div>
+
+    <h2
+    class="question-category"
+    id="question-text">
+
+    {{ question.question }}
+
+    </h2>
 
     <div class="answer-grid">
 
@@ -181,6 +185,11 @@
 
     const question =
     questions[index];
+
+    document.getElementById(
+    "question-text"
+    ).innerText =
+    question.question;
 
     document.getElementById(
         "pokemon-image"
