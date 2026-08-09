@@ -1,0 +1,1360 @@
+/* ============================================================
+   POKEVERSE GAMES
+   Games Home + Game Details
+   ============================================================ */
+
+
+/* ============================================================
+   GAMES HOME
+   ============================================================ */
+
+.games-back {
+    position: fixed;
+    top: 12px;
+    left: 20px;
+
+    z-index: 1000;
+
+    padding: 8px 16px;
+
+    border: 1px solid #ffcb05;
+    border-radius: 6px;
+
+    background: #111;
+
+    color: #ffcb05;
+
+    font-size: 11px;
+    text-decoration: none;
+
+    transition: 0.2s ease;
+}
+
+.games-back:hover {
+    background: #ffcb05;
+    color: #111;
+}
+
+.games-header {
+    width: min(1165px, 90%);
+    margin: 0 auto;
+    padding: 55px 0 35px;
+    text-align: center;
+}
+
+.games-header h1 {
+    margin: 0 0 12px;
+    color: #ffcb05;
+    font-size: clamp(36px, 4vw, 52px);
+}
+
+.games-header p {
+    margin: 0;
+    color: #9b9b9b;
+    font-size: 15px;
+}
+
+.generation-header {
+    width: min(1165px, 90%);
+    margin: 35px auto 0;
+    padding-bottom: 18px;
+    border-bottom: 1px solid rgba(255, 203, 5, 0.45);
+}
+
+.generation-header h2 {
+    margin: 0 0 8px;
+    color: #f5f5f5;
+    font-size: 29px;
+}
+
+.generation-header p {
+    margin: 0;
+    color: #929292;
+    font-size: 13px;
+}
+
+.games-grid {
+    width: min(1165px, 90%);
+    margin: 26px auto 58px;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 24px;
+}
+
+.game-card {
+    overflow: hidden;
+
+    display: block;
+
+    border: 1px solid #292929;
+    border-radius: 13px;
+
+    background: #181818;
+
+    color: inherit;
+    text-decoration: none;
+
+    transition: transform 0.2s ease,
+                border-color 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+
+    border-color: #ffcb05;
+
+    box-shadow: 0 12px 30px rgba(255, 203, 5, 0.12);
+}
+
+.cover-container {
+    width: 100%;
+    overflow: hidden;
+
+    border-radius: 10px 10px 0 0;
+
+    background: transparent;
+}
+
+.cover-container img {
+    display: block;
+
+    width: 100%;
+    height: auto;
+
+    object-fit: initial;
+}
+
+.game-info {
+    padding: 14px;
+}
+
+.game-info h3 {
+    margin: 0 0 5px;
+
+    color: #f4f4f4;
+
+    font-size: 15px;
+    line-height: 1.3;
+}
+
+.game-info span {
+    color: #777;
+    font-size: 12px;
+}
+
+/* ============================================================
+   GAMES SEARCH
+   ============================================================ */
+
+.games-header-content {
+    width: min(1280px, 94%);
+    margin: 0 auto;
+
+    display: flex;
+
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 30px;
+}
+
+.games-title-area {
+    text-align: left;
+}
+
+.games-search {
+    position: relative;
+
+    width: 300px;
+    height: 42px;
+
+    flex-shrink: 0;
+}
+
+.games-search input {
+    width: 100%;
+    height: 100%;
+
+    box-sizing: border-box;
+
+    padding: 0 42px 0 40px;
+
+    border: 1px solid #303536;
+    border-radius: 10px;
+
+    outline: none;
+
+    background: #171b1c;
+
+    color: #eeeeee;
+
+    font-family: inherit;
+    font-size: 13px;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background 0.2s ease;
+}
+
+.games-search input::placeholder {
+    color: #747c7d;
+}
+
+.games-search input:focus {
+    border-color: #ffcb05;
+
+    background: #141919;
+
+    box-shadow:
+        0 0 0 3px rgba(255, 203, 5, 0.08);
+}
+
+.search-icon {
+    position: absolute;
+
+    left: 14px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    z-index: 2;
+
+    color: #8d9697;
+
+    font-size: 21px;
+
+    pointer-events: none;
+}
+
+#clearGameSearch {
+    position: absolute;
+
+    right: 8px;
+    top: 50%;
+
+    width: 27px;
+    height: 27px;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    transform: translateY(-50%);
+
+    border: 0;
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: #858d8e;
+
+    font-size: 19px;
+
+    cursor: pointer;
+}
+
+#clearGameSearch:hover {
+    background: #292e2f;
+    color: #ffffff;
+}
+
+
+/* ============================================================
+   SEARCH EMPTY STATE
+   ============================================================ */
+
+.games-no-results {
+    width: min(1280px, 94%);
+
+    margin: 70px auto;
+
+    display: none;
+
+    text-align: center;
+}
+
+.games-no-results-icon {
+    margin-bottom: 10px;
+
+    color: #ffcb05;
+
+    font-size: 35px;
+}
+
+.games-no-results h2 {
+    margin: 0 0 7px;
+
+    color: #eeeeee;
+
+    font-size: 21px;
+}
+
+.games-no-results p {
+    margin: 0;
+
+    color: #777f80;
+
+    font-size: 13px;
+}
+
+/* ============================================================
+   GAME DETAILS — PAGE
+   ============================================================ */
+
+.game-details-page {
+    --panel-bg: #101819;
+    --panel-border: #263033;
+    --text-main: #f2f2f2;
+    --text-soft: #b4bcbc;
+    --text-muted: #737d7f;
+
+    width: min(1280px, 94%);
+    margin: 0 auto;
+
+    padding: 28px 0 80px;
+}
+
+
+/* ============================================================
+   BACK BUTTON
+   ============================================================ */
+
+.game-back-button {
+    position: fixed;
+
+    top: 22px;
+    left: 36px;
+
+    z-index: 1000;
+
+    display: inline-flex;
+    align-items: center;
+
+    padding: 9px 15px;
+
+    border: 1px solid #394244;
+    border-radius: 9px;
+
+    background: rgba(10, 15, 16, 0.92);
+
+    color: #eeeeee;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition: 0.2s ease;
+}
+
+.game-back-button:hover {
+    border-color: #ffcb05;
+    color: #ffcb05;
+    transform: translateX(2px);
+}
+
+
+/* ============================================================
+   HERO
+   ============================================================ */
+
+.game-hero {
+    position: relative;
+
+    min-height: 430px;
+
+    display: grid;
+
+    grid-template-columns: 300px 1fr;
+
+    align-items: center;
+
+    gap: 58px;
+
+    margin-top: 18px;
+
+    padding: 48px 55px;
+
+    overflow: hidden;
+
+    border: 1px solid var(--game-accent, #ffcb05);
+    border-radius: 16px;
+
+    background:
+        radial-gradient(
+            circle at 82% 30%,
+            color-mix(
+                in srgb,
+                var(--game-accent, #ffcb05),
+                transparent 78%
+            ) 0,
+            transparent 35%
+        ),
+        linear-gradient(
+            120deg,
+            #071211,
+            #101817 65%,
+            #0c1111
+        );
+
+    box-shadow:
+        0 0 40px
+        color-mix(
+            in srgb,
+            var(--game-accent, #ffcb05),
+            transparent 88%
+        );
+}
+
+.game-hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 560px;
+    height: 560px;
+
+    right: -250px;
+    top: -250px;
+
+    border: 70px solid
+        color-mix(
+            in srgb,
+            var(--game-accent, #ffcb05),
+            transparent 91%
+        );
+
+    border-radius: 50%;
+
+    pointer-events: none;
+}
+
+.game-hero-cover {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+    justify-content: center;
+}
+
+.game-hero-cover img {
+    display: block;
+
+    width: 260px;
+    max-height: 350px;
+
+    object-fit: contain;
+
+    border-radius: 8px;
+
+    filter:
+        drop-shadow(
+            0 20px 25px rgba(0, 0, 0, 0.55)
+        );
+}
+
+.game-hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.game-hero-kicker {
+    display: inline-block;
+
+    margin-bottom: 18px;
+
+    color: var(--game-accent, #ffcb05);
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+.game-hero-label {
+    margin: 0;
+
+    color: #e7e7e7;
+
+    font-size: 24px;
+    font-weight: 600;
+}
+
+.game-hero h1 {
+    margin: 2px 0 15px;
+
+    color: var(--game-accent, #ffcb05);
+
+    font-size: clamp(48px, 6vw, 76px);
+
+    line-height: 0.98;
+
+    letter-spacing: -2px;
+}
+
+.game-hero-description {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: #d0d5d5;
+
+    font-size: 15px;
+    line-height: 1.75;
+}
+
+.game-hero-stats {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 10px;
+
+    margin-top: 30px;
+}
+
+.hero-stat {
+    min-height: 64px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 11px 13px;
+
+    border: 1px solid
+        color-mix(
+            in srgb,
+            var(--game-accent, #ffcb05),
+            #263033 65%
+        );
+
+    border-radius: 9px;
+
+    background: rgba(5, 9, 9, 0.28);
+}
+
+.hero-stat span {
+    margin-bottom: 5px;
+
+    color: #8e999a;
+
+    font-size: 11px;
+
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+}
+
+.hero-stat strong {
+    color: #f3f3f3;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+
+.details-two-column {
+    display: grid;
+
+    grid-template-columns: 1.25fr 0.95fr;
+
+    gap: 12px;
+
+    margin-top: 12px;
+}
+
+.details-panel {
+    min-width: 0;
+
+    padding: 20px 18px;
+
+    border: 1px solid var(--panel-border);
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(18, 27, 28, 0.96),
+            rgba(11, 17, 18, 0.96)
+        );
+}
+
+.full-panel {
+    margin-top: 12px;
+}
+
+.panel-heading {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.panel-heading > span {
+    width: 4px;
+    height: 28px;
+
+    flex-shrink: 0;
+
+    border-radius: 3px;
+
+    background: #22d66f;
+}
+
+.panel-heading h2 {
+    margin: 0;
+
+    color: #f2f2f2;
+
+    font-size: 21px;
+    line-height: 1.2;
+}
+
+
+/* ============================================================
+   OVERVIEW
+   ============================================================ */
+
+.overview-content {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 20px;
+
+    align-items: center;
+}
+
+.overview-content p {
+    margin: 0;
+
+    color: #c8cece;
+
+    font-size: 16px;
+    line-height: 1.8;
+}
+
+.overview-visual {
+    height: 175px;
+
+    overflow: hidden;
+
+    border-radius: 9px;
+
+    background: #0a0f10;
+}
+
+.overview-visual img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* ============================================================
+   RELEASE INFORMATION
+   ============================================================ */
+
+.release-list {
+    border-top: 1px solid #2a3435;
+}
+
+.release-row {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 12px 2px;
+
+    border-bottom: 1px solid #293334;
+}
+
+.release-row span {
+    color: #d5d8d8;
+
+    font-size: 13px;
+}
+
+.release-row strong {
+    color: #e5d6a0;
+
+    font-size: 13px;
+    font-weight: 500;
+
+    text-align: right;
+}
+
+
+/* ============================================================
+   REGION
+   ============================================================ */
+
+.region-content {
+    display: grid;
+
+    grid-template-columns: 1.05fr 1fr;
+
+    gap: 18px;
+
+    align-items: center;
+}
+
+.region-visual {
+    min-height: 150px;
+
+    overflow: hidden;
+
+    border-radius: 9px;
+
+    background: #0a0f10;
+}
+
+.region-visual img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    min-height: 150px;
+
+    object-fit: cover;
+}
+
+.region-placeholder {
+    min-height: 150px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #22d66f;
+
+    font-size: 22px;
+    font-weight: 700;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(34, 214, 111, 0.14),
+            transparent 60%
+        );
+}
+
+.region-content p {
+    margin: 0;
+
+    color: #c5cccc;
+
+    font-size: 18px;
+    line-height: 1.8;
+}
+
+
+/* ============================================================
+   KEY FEATURES
+   ============================================================ */
+
+.feature-list {
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.feature-list li {
+    display: flex;
+
+    gap: 9px;
+
+    padding: 10px 0;
+
+    border-bottom: 1px solid #273132;
+}
+
+.feature-list li:last-child {
+    border-bottom: 0;
+}
+
+.feature-list li > span {
+    color: #22d66f;
+
+    font-size: 15px;
+    font-weight: 800;
+}
+
+.feature-list p {
+    margin: 0;
+
+    color: #d0d5d5;
+
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.empty-state {
+    border-bottom: 0 !important;
+}
+
+
+/* ============================================================
+   CHALLENGES
+   ============================================================ */
+
+/* ============================================================
+   COMPACT GYMS & CHALLENGES
+   ============================================================ */
+
+.challenge-columns {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 18px;
+}
+
+
+/* Column */
+
+.challenge-column {
+    min-width: 0;
+
+    padding: 14px;
+
+    border: 1px solid #263234;
+    border-radius: 9px;
+
+    background: rgba(255, 255, 255, 0.012);
+}
+
+
+/* Column heading */
+
+.challenge-column-title {
+    margin: 0 0 10px;
+
+    color: #f1f1f1;
+
+    font-size: 15px;
+    font-weight: 700;
+}
+
+
+/* Challenge list */
+
+.compact-challenge-list {
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 6px;
+}
+
+
+/* Individual row */
+
+.compact-challenge {
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    min-height: 43px;
+
+    padding: 6px 8px;
+
+    border: 1px solid #273334;
+    border-radius: 7px;
+
+    background: rgba(255, 255, 255, 0.01);
+
+    transition:
+        border-color 0.2s ease,
+        background 0.2s ease;
+}
+
+.compact-challenge:hover {
+    border-color: #22d66f;
+
+    background: rgba(34, 214, 111, 0.035);
+}
+
+
+/* Number / star */
+
+.compact-order {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid #344142;
+    border-radius: 50%;
+
+    color: #22d66f;
+
+    font-size: 10px;
+    font-weight: 800;
+}
+
+
+/* Text */
+
+.compact-info {
+    min-width: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 1px;
+}
+
+.compact-info strong {
+    color: #eeeeee;
+
+    font-size: 11px;
+
+    line-height: 1.25;
+}
+
+.compact-info span {
+    color: #9ba4a5;
+
+    font-size: 11px;
+}
+
+
+/* Champion */
+
+.champion-challenge {
+    border-color: rgba(255, 203, 5, 0.45);
+
+    background:
+        rgba(255, 203, 5, 0.025);
+}
+
+.champion-challenge .compact-order {
+    border-color: #ffcb05;
+
+    color: #ffcb05;
+}
+
+.champion-challenge .compact-info strong {
+    color: #ffcb05;
+}
+
+
+/* Mobile */
+
+@media (max-width: 800px) {
+
+    .challenge-columns {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+/* ============================================================
+   POKÉMON CARDS
+   ============================================================ */
+
+.pokemon-row {
+    grid-template-columns: 1fr 1.15fr;
+}
+
+.pokemon-card-grid {
+    display: grid;
+
+    grid-template-columns: repeat(3, 1fr);
+
+    gap: 8px;
+}
+
+.pokemon-card {
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 150px;
+
+    padding: 9px;
+
+    border: 1px solid #2a3536;
+
+    border-radius: 8px;
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(34, 214, 111, 0.08),
+            transparent 55%
+        );
+
+    transition: 0.2s ease;
+}
+
+.pokemon-card:hover {
+    border-color: #22d66f;
+    transform: translateY(-3px);
+}
+
+.pokemon-artwork {
+    width: 100%;
+    height: 105px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pokemon-artwork img {
+    width: 105px;
+    height: 105px;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(
+            0 8px 8px rgba(0, 0, 0, 0.45)
+        );
+}
+
+.pokemon-card strong {
+    color: #22d66f;
+
+    font-size: 13px;
+
+    text-align: center;
+}
+
+.legendary-pokemon-card {
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(255, 203, 5, 0.08),
+            transparent 55%
+        );
+}
+
+.legendary-pokemon-card strong {
+    color: #ffcb05;
+}
+
+.pokemon-loading,
+.pokemon-artwork-fallback {
+    color: #667070;
+
+    font-size: 16px;
+}
+
+
+/* ============================================================
+   DIFFICULTY
+   ============================================================ */
+
+.difficulty-panel {
+    min-height: 235px;
+}
+
+.difficulty-meter {
+    height: calc(100% - 50px);
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.difficulty-scale {
+    width: 78%;
+
+    margin-top: 8px;
+}
+
+.difficulty-track {
+    position: relative;
+
+    height: 14px;
+
+    overflow: hidden;
+
+    border-radius: 20px;
+
+    background: #202829;
+}
+
+.difficulty-fill {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    height: 100%;
+
+    border-radius: 20px 0 0 20px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #62c957 0%,
+            #f1d22e 55%,
+            #e75c32 100%
+        );
+}
+
+.difficulty-labels {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-top: 8px;
+
+    color: #858d8e;
+
+    font-size: 11px;
+}
+
+.difficulty-score {
+    margin-top: 22px;
+
+    color: #d6dddd;
+}
+
+.difficulty-score strong {
+    color: #ffcb05;
+
+    font-size: 30px;
+}
+
+.difficulty-score span {
+    color: #777;
+
+    font-size: 13px;
+}
+
+.difficulty-name {
+    margin: 3px 0 0;
+
+    color: #ffcb05;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+
+/* ============================================================
+   RELATED GAMES
+   ============================================================ */
+
+.related-games-grid {
+    display: grid;
+
+    grid-template-columns: repeat(5, 1fr);
+
+    gap: 8px;
+}
+
+.related-game-card {
+    min-width: 0;
+
+    overflow: hidden;
+
+    border: 1px solid #293435;
+
+    border-radius: 7px;
+
+    background: #111819;
+
+    text-decoration: none;
+
+    transition: 0.2s ease;
+}
+
+.related-game-card:hover {
+    border-color: #22d66f;
+
+    transform: translateY(-3px);
+}
+
+.related-cover {
+    aspect-ratio: 3 / 4;
+
+    overflow: hidden;
+
+    background: #0a0f10;
+}
+
+.related-cover img {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+.related-game-info {
+    padding: 7px;
+}
+
+.related-game-info h3 {
+    margin: 0 0 3px;
+
+    color: #eeeeee;
+
+    font-size: 11px;
+
+    line-height: 1.3;
+}
+
+.related-game-info span {
+    color: #707979;
+
+    font-size: 9px;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 1050px) {
+
+    .games-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .game-hero {
+        grid-template-columns: 240px 1fr;
+        gap: 35px;
+        padding: 38px;
+    }
+
+    .game-hero-cover img {
+        width: 220px;
+    }
+
+    .game-hero-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .related-games-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+
+@media (max-width: 800px) {
+
+    .games-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .details-two-column,
+    .pokemon-row {
+        grid-template-columns: 1fr;
+    }
+
+    .game-hero {
+        grid-template-columns: 1fr;
+
+        text-align: center;
+    }
+
+    .game-hero-cover {
+        order: 2;
+    }
+
+    .game-hero-content {
+        order: 1;
+    }
+
+    .game-hero-description {
+        margin: 0 auto;
+    }
+
+    .challenge-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .region-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 560px) {
+
+    .game-details-page {
+        width: 92%;
+        padding-top: 70px;
+    }
+
+    .games-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+
+    .generation-header {
+        width: 92%;
+    }
+
+    .game-hero {
+        padding: 28px 20px;
+    }
+
+    .game-hero h1 {
+        font-size: 43px;
+    }
+
+    .game-hero-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .game-hero-cover img {
+        width: 180px;
+    }
+
+    .pokemon-card-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .related-games-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .game-back-button {
+        top: 14px;
+        left: 14px;
+    }
+}

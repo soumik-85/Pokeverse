@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Pokémon Timeline | PokeVerse</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/timeline.css') }}">
+
+</head>
+
+
+<body>
+
+    <!-- ===================================================== -->
+    <!-- PAGE -->
+    <!-- ===================================================== -->
+
+    <div class="timeline-page">
+
+
+        <!-- ================================================= -->
+        <!-- HEADER -->
+        <!-- ================================================= -->
+
+        <header class="timeline-header">
+
+            <div class="timeline-header-left">
+
+                <a href="/"
+                   class="timeline-back-button">
+                    ←
+                    <span>Back</span>
+                </a>
+
+            </div>
+
+
+            <div class="timeline-title">
+
+                <h1>Pokémon Timeline</h1>
+
+                <p>
+                    Explore the major moments that shaped the Pokémon world.
+                </p>
+
+            </div>
+
+
+            <div class="timeline-header-right">
+                <!-- Reserved for future controls -->
+            </div>
+
+        </header>
+
+
+
+        <!-- ================================================= -->
+        <!-- MAIN CONTENT -->
+        <!-- ================================================= -->
+
+        <main class="timeline-main">
+
+
+            <!-- ============================================= -->
+            <!-- LEFT: TIMELINE -->
+            <!-- ============================================= -->
+
+            <section class="timeline-sidebar">
+
+                <div class="timeline-line"></div>
+
+
+                <div class="timeline-events">
+
+
+                    {% for event in events %}
+
+                    <div class="timeline-event"
+                         data-event-id="{{ event.id }}"
+                         data-year="{{ event.year }}"
+                         data-month="{{ event.month }}"
+                         data-title="{{ event.title }}"
+                         data-description="{{ event.description }}"
+                         data-category="{{ event.category }}"
+                         data-image="{{ event.image }}">
+
+
+                        <!-- --------------------------------- -->
+                        <!-- EVENT YEAR -->
+                        <!-- --------------------------------- -->
+
+                        <div class="timeline-year">
+
+                            <span class="year-number">
+                                {{ event.year }}
+                            </span>
+
+
+                            <!--
+                                Month is displayed only when
+                                the same year appears more than once.
+                            -->
+
+                            {% set same_year_count =
+                                events
+                                |selectattr("year", "equalto", event.year)
+                                |list
+                                |length
+                            %}
+
+
+                            {% if same_year_count > 1 %}
+
+                                {% set month_names = [
+                                    "",
+                                    "JAN",
+                                    "FEB",
+                                    "MAR",
+                                    "APR",
+                                    "MAY",
+                                    "JUN",
+                                    "JUL",
+                                    "AUG",
+                                    "SEP",
+                                    "OCT",
+                                    "NOV",
+                                    "DEC"
+                                ] %}
+
+                                <span class="timeline-month">
+                                    {{ month_names[event.month] }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+
+
+                        <!-- --------------------------------- -->
+                        <!-- EVENT CONNECTOR -->
+                        <!-- --------------------------------- -->
+
+                        <div class="timeline-connector">
+
+                            <button
+                                type="button"
+                                class="timeline-dot"
+                                aria-label="View {{ event.title }}"
+                                data-event="{{ event.id }}">
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- --------------------------------- -->
+                        <!-- EVENT TITLE -->
+                        <!-- --------------------------------- -->
+
+                        <button
+                            type="button"
+                            class="timeline-event-title"
+                            data-event="{{ event.id }}">
+
+                            {{ event.title }}
+
+                        </button>
+
+                    </div>
+
+                    {% endfor %}
+
+
+                </div>
+
+            </section>
+
+
+
+            <!-- ============================================= -->
+            <!-- RIGHT: EVENT INFORMATION -->
+            <!-- ============================================= -->
+
+            <section class="timeline-content">
+
+
+                <!-- ========================================= -->
+                <!-- DEFAULT / INTRO STATE -->
+                <!-- ========================================= -->
+
+                <div class="timeline-intro"
+                     id="timelineIntro">
+
+                    <div class="timeline-intro-inner">
+
+                        <span class="timeline-intro-label">
+                            POKÉMON HISTORY
+                        </span>
+
+                        <h2>
+                            A Journey Through Pokémon
+                        </h2>
+
+                        <p>
+                            From the release of the first Pokémon games
+                            to the modern era, explore the moments that
+                            helped shape the Pokémon world.
+                        </p>
+
+                        <p class="timeline-intro-hint">
+                            Select an event from the timeline to learn more.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ========================================= -->
+                <!-- EVENT DETAIL -->
+                <!-- ========================================= -->
+
+                <article class="timeline-detail"
+                         id="timelineDetail"
+                         hidden>
+
+
+                    <!-- ------------------------------------- -->
+                    <!-- DETAIL HEADER -->
+                    <!-- ------------------------------------- -->
+
+<div class="timeline-detail-header">
+
+    <div class="timeline-detail-meta">
+
+        <div class="timeline-detail-date">
+
+            <span id="detailYear">
+                1996
+            </span>
+
+            <span
+                id="detailMonth"
+                class="detail-month">
+            </span>
+
+        </div>
+
+
+        <div class="timeline-detail-category"
+             id="detailCategory">
+
+            Games
+
+        </div>
+
+    </div>
+
+
+    <button
+        type="button"
+        class="timeline-close"
+        id="timelineClose"
+        aria-label="Close event">
+
+        ×
+
+    </button>
+
+</div>
+
+
+
+                    <!-- ------------------------------------- -->
+                    <!-- DETAIL TITLE -->
+                    <!-- ------------------------------------- -->
+
+                    <h2 id="detailTitle">
+                        Pokémon Begins
+                    </h2>
+
+
+
+                    <!-- ------------------------------------- -->
+                    <!-- DETAIL DIVIDER -->
+                    <!-- ------------------------------------- -->
+
+                    <div class="timeline-detail-divider"></div>
+
+
+
+                    <!-- ------------------------------------- -->
+                    <!-- DETAIL IMAGE -->
+                    <!-- ------------------------------------- -->
+
+                    <div class="timeline-detail-image-wrapper">
+
+                        <img
+                            id="detailImage"
+                            src=""
+                            alt=""
+                            class="timeline-detail-image"
+                        >
+
+                    </div>
+
+
+
+                    <!-- ------------------------------------- -->
+                    <!-- DETAIL DESCRIPTION -->
+                    <!-- ------------------------------------- -->
+
+                    <div class="timeline-detail-description">
+
+                        <p id="detailDescription"></p>
+
+                    </div>
+
+
+                </article>
+
+
+            </section>
+
+
+        </main>
+
+
+    </div>
+
+
+
+    <!-- ===================================================== -->
+    <!-- TIMELINE JAVASCRIPT -->
+    <!-- ===================================================== -->
+
+    <script>
+
+        document.addEventListener("DOMContentLoaded", function () {
+
+
+            const events = document.querySelectorAll(
+                ".timeline-event"
+            );
+
+
+            const dots = document.querySelectorAll(
+                ".timeline-dot"
+            );
+
+
+            const titles = document.querySelectorAll(
+                ".timeline-event-title"
+            );
+
+
+            const intro = document.getElementById(
+                "timelineIntro"
+            );
+
+
+            const detail = document.getElementById(
+                "timelineDetail"
+            );
+
+
+            const closeButton = document.getElementById(
+                "timelineClose"
+            );
+
+
+            const detailYear = document.getElementById(
+                "detailYear"
+            );
+
+
+            const detailMonth = document.getElementById(
+                "detailMonth"
+            );
+
+
+            const detailTitle = document.getElementById(
+                "detailTitle"
+            );
+
+
+            const detailCategory = document.getElementById(
+                "detailCategory"
+            );
+
+
+            const detailDescription = document.getElementById(
+                "detailDescription"
+            );
+
+
+            const detailImage = document.getElementById(
+                "detailImage"
+            );
+
+
+
+            /*
+             * Month names
+             */
+
+            const monthNames = [
+                "",
+                "JAN",
+                "FEB",
+                "MAR",
+                "APR",
+                "MAY",
+                "JUN",
+                "JUL",
+                "AUG",
+                "SEP",
+                "OCT",
+                "NOV",
+                "DEC"
+            ];
+
+
+
+function openEvent(eventElement) {
+
+    const eventId =
+        eventElement.dataset.eventId;
+
+    const year =
+        eventElement.dataset.year;
+
+    const month =
+        parseInt(eventElement.dataset.month);
+
+    const title =
+        eventElement.dataset.title;
+
+    const description =
+        eventElement.dataset.description;
+
+    const category =
+        eventElement.dataset.category;
+
+    const image =
+        eventElement.dataset.image;
+
+
+    /*
+     * Find the position of the clicked event
+     * in the timeline.
+     */
+
+    const eventList =
+        Array.from(events);
+
+    const newIndex =
+        eventList.indexOf(eventElement);
+
+
+    /*
+     * Find the currently active event.
+     */
+
+    const currentEvent =
+        document.querySelector(
+            ".timeline-event.active"
+        );
+
+
+    let currentIndex = -1;
+
+
+    if (currentEvent) {
+
+        currentIndex =
+            eventList.indexOf(currentEvent);
+
+    }
+
+
+    /*
+     * Determine animation direction.
+     *
+     * Later event  -> slide UP
+     * Earlier event -> slide DOWN
+     */
+
+    let animationClass = "";
+
+
+    if (
+        currentIndex !== -1 &&
+        newIndex > currentIndex
+    ) {
+
+        animationClass =
+            "slide-up";
+
+    }
+    else if (
+        currentIndex !== -1 &&
+        newIndex < currentIndex
+    ) {
+
+        animationClass =
+            "slide-down";
+
+    }
+
+
+    /*
+     * Remove previous active event.
+     */
+
+    events.forEach(function (item) {
+
+        item.classList.remove(
+            "active"
+        );
+
+    });
+
+
+    /*
+     * Highlight selected event.
+     */
+
+    eventElement.classList.add(
+        "active"
+    );
+
+
+    /*
+     * If this is the first event being opened,
+     * show it normally.
+     */
+
+    if (currentIndex === -1) {
+
+        updateDetailContent();
+
+        intro.classList.add(
+            "hidden"
+        );
+
+        detail.hidden = false;
+
+        detail.classList.add(
+            "visible"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * Animate the existing information panel.
+     */
+
+    detail.classList.remove(
+        "slide-up",
+        "slide-down"
+    );
+
+
+    /*
+     * Force browser reflow so the
+     * animation can restart every time.
+     */
+
+    void detail.offsetWidth;
+
+
+    detail.classList.add(
+        animationClass
+    );
+
+
+    /*
+     * Change the information while the
+     * old content is moving out.
+     */
+
+    setTimeout(function () {
+
+        updateDetailContent();
+
+    }, 150);
+
+
+    /*
+     * Remove animation class after transition.
+     */
+
+    setTimeout(function () {
+
+        detail.classList.remove(
+            "slide-up",
+            "slide-down"
+        );
+
+    }, 350);
+
+
+
+    /*
+     * Update event information.
+     */
+
+    function updateDetailContent() {
+
+        detailYear.textContent =
+            year;
+
+        detailMonth.textContent =
+            monthNames[month];
+
+        detailTitle.textContent =
+            title;
+
+        detailCategory.textContent =
+            category;
+
+        detailDescription.textContent =
+            description;
+
+
+        /*
+         * Load timeline image.
+         */
+
+        detailImage.src =
+            "{{ url_for('static', filename='images/timeline/') }}"
+            + image;
+
+        detailImage.alt =
+            title;
+
+
+        /*
+         * Make sure the detail panel is visible.
+         */
+
+        intro.classList.add(
+            "hidden"
+        );
+
+        detail.hidden = false;
+
+        detail.classList.add(
+            "visible"
+        );
+
+    }
+
+}
+
+
+
+            /*
+             * Dot click
+             */
+
+            dots.forEach(function (dot) {
+
+                dot.addEventListener(
+                    "click",
+                    function () {
+
+                        const eventId =
+                            this.dataset.event;
+
+                        const eventElement =
+                            document.querySelector(
+                                '.timeline-event[data-event-id="' +
+                                eventId +
+                                '"]'
+                            );
+
+                        if (eventElement) {
+
+                            openEvent(
+                                eventElement
+                            );
+
+                        }
+
+                    }
+                );
+
+            });
+
+
+
+            /*
+             * Title click
+             */
+
+            titles.forEach(function (titleButton) {
+
+                titleButton.addEventListener(
+                    "click",
+                    function () {
+
+                        const eventId =
+                            this.dataset.event;
+
+                        const eventElement =
+                            document.querySelector(
+                                '.timeline-event[data-event-id="' +
+                                eventId +
+                                '"]'
+                            );
+
+                        if (eventElement) {
+
+                            openEvent(
+                                eventElement
+                            );
+
+                        }
+
+                    }
+                );
+
+            });
+
+
+
+            /*
+             * Close event
+             */
+
+            closeButton.addEventListener(
+                "click",
+                function () {
+
+                    events.forEach(function (item) {
+
+                        item.classList.remove(
+                            "active"
+                        );
+
+                    });
+
+
+                    detail.classList.remove(
+                        "visible"
+                    );
+
+
+                    detail.hidden = true;
+
+
+                    intro.classList.remove(
+                        "hidden"
+                    );
+
+                }
+            );
+
+
+
+            /*
+             * ESC key closes event
+             */
+
+            document.addEventListener(
+                "keydown",
+                function (event) {
+
+                    if (
+                        event.key === "Escape" &&
+                        !detail.hidden
+                    ) {
+
+                        closeButton.click();
+
+                    }
+
+                }
+            );
+
+
+        });
+
+    </script>
+
+
+</body>
+
+</html>

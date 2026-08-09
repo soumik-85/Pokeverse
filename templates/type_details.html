@@ -9,159 +9,303 @@
         href="{{ url_for('static', filename='css/style.css') }}"
     >
 
-</head>
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/tdetails.css') }}">
 
+</head>
 <body>
 
-<div class="container"
-     style="--type-color: {{ type_color }};">
-
+<div class="container" style="--type-color: {{ type_color }};">
 
     <a href="/types" class="back-btn">
         ← Back
     </a>
 
-    <h1 class="page-title"
-    style="color: {{ type_color }};">
+    <div class="overview-heading">
 
-    <img
-        src="{{ url_for('static',
-        filename='images/types/' + type_data.name + '.svg') }}"
-        class="title-icon">
-
-    {{ type_data.name.title() }} Type
-
-</h1>
-
-<div class="description-card">
-
-    <h3 style="color: var(--type-color);">
-        📖 Type Overview
-    </h3>
+    <h1>Type Overview</h1>
 
     <p>
-        {{ type_description }}
+        Explore the strengths, weaknesses and signature Pokémon
+        of the {{ type_data.name.title() }} type.
     </p>
 
 </div>
 
-    <div class="type-stats">
+    <!-- HERO -->
 
-    <div class="card info-card">
+    <section class="type-hero">
 
-    <h2 style="color: {{ type_color }};">
-        Matchups
-    </h2>
+        <div class="hero-left">
 
-    <h3>Strong Against</h3>
+            <div class="hero-title">
 
-    <div>
+                <img
+                    src="{{ url_for('static', filename='images/types/' + type_data.name + '.svg') }}"
+                    class="hero-icon">
 
-    {% for type in type_data.damage_relations.double_damage_to %}
+                <div>
 
-        <span class="type-badge"
-              style="border-color: {{ type_color }};">
+                    <span class="hero-label">
+                        Pokémon Type
+                    </span>
 
-            {{ type.name.title() }}
+                    <h1>
+                        {{ type_data.name.title() }} Type
+                    </h1>
 
-        </span>
+                </div>
 
-    {% endfor %}
+            </div>
 
-    </div>
+            <p class="hero-description">
+                {{ type_description }}
+            </p>
 
-    <h3 style="margin-top:20px;">
-        Weak Against
-    </h3>
+            <div class="hero-facts">
 
-    <div>
+                <div class="fact-card">
 
-    {% for type in type_data.damage_relations.double_damage_from %}
+                    <span class="fact-title">
+                        Pokémon
+                    </span>
 
-        <span class="type-badge"
-              style="border-color: {{ type_color }};">
+                    <span class="fact-value">
+                        {{ type_data.pokemon | length }}
+                    </span>
 
-            {{ type.name.title() }}
+                </div>
 
-        </span>
+                <div class="fact-card">
 
-    {% endfor %}
+                    <span class="fact-title">
+                        Introduced
+                    </span>
 
-    </div>
+                    <span class="fact-value">
+                        Generation I
+                    </span>
 
-</div>
+                </div>
 
-<div class="card info-card mascot-card">
+                <div class="fact-card">
 
-    <h2 style="color: {{ type_color }};">
-        Mascot
-    </h2>
+                    <span class="fact-title">
+                        Mascot
+                    </span>
 
-    <img
-        src="{{ mascot.sprites.other['official-artwork'].front_default }}"
-        class="mascot-image"
-    >
+                    <span class="fact-value">
+                        {{ mascot.name.title() }}
+                    </span>
 
-    <h3>
-        {{ mascot.name.title() }}
-    </h3>
+                </div>
 
-</div>
-
-    <div class="card info-card">
-
-        <h2 style="color: {{ type_color }};">
-    Pokémon Count
-</h2>
-
-        <div class="count-number">
-
-    {{ type_data.pokemon | length }}
-
-</div>
-
-<p>Total Pokémon</p>
-
-    </div>
-
-</div>
-
-<div class="card pokemon-list-card"
-     style="border-color: {{ type_color }};">
-
-    <h2 style="color: {{ type_color }};">
-    ⭐ Featured {{ type_data.name.title() }} Pokémon
-</h2>
-
-<div class="featured-grid">
-
-    {% for pokemon in featured_pokemon %}
-
-    <a href="/pokemon/{{ pokemon.name.lower() }}"
-       class="pokemon-card-link">
-
-        <div class="featured-card">
-
-            <img
-                src="{{ pokemon.image }}"
-                class="featured-image"
-            >
-
-            <h3>
-                {{ pokemon.name }}
-            </h3>
+            </div>
 
         </div>
 
-    </a>
+        <div class="hero-right">
 
-    {% endfor %}
+            <img
+                src="{{ mascot.sprites.other['official-artwork'].front_default }}"
+                class="hero-mascot">
+
+            <img
+                src="{{ url_for('static', filename='images/types/' + type_data.name + '.svg') }}"
+                class="hero-bg-icon">
+
+        </div>
+
+    </section>
+
+    <!-- INFO GRID -->
+
+    <div class="type-info-grid">
+
+        <div class="info-panel">
+
+            <h2 style="color: var(--type-color);">
+                ⚔ Type Matchups
+            </h2>
+
+            <h3>
+                Strong Against
+            </h3>
+
+            <div class="badge-container">
+
+                {% for type in type_data.damage_relations.double_damage_to %}
+
+                <span class="type-badge">
+
+                    {{ type.name.title() }}
+
+                </span>
+
+                {% endfor %}
+
+            </div>
+
+            <h3 class="section-gap">
+                Weak Against
+            </h3>
+
+            <div class="badge-container">
+
+                {% for type in type_data.damage_relations.double_damage_from %}
+
+                <span class="type-badge">
+
+                    {{ type.name.title() }}
+
+                </span>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+        <div class="info-panel mascot-panel">
+
+            <h2 style="color: var(--type-color);">
+                🌟 Type Mascot
+            </h2>
+
+            <img
+                src="{{ mascot.sprites.other['official-artwork'].front_default }}"
+                class="mascot-image">
+
+            <h3>
+                {{ mascot.name.title() }}
+            </h3>
+
+            <p>
+                The signature Pokémon representing the
+                {{ type_data.name.title() }} type.
+            </p>
+
+        </div>
+
+        <div class="info-panel">
+
+            <h2 style="color: var(--type-color);">
+                📌 Quick Facts
+            </h2>
+
+            <ul class="facts-list">
+
+                <li>
+                    <strong>Pokémon:</strong>
+                    {{ type_data.pokemon | length }}
+                </li>
+
+                <li>
+                    <strong>Generation:</strong>
+                    I
+                </li>
+
+                <li>
+                    <strong>Featured:</strong>
+                    {{ featured_pokemon|length }}
+                </li>
+
+                <li>
+                    <strong>Moves:</strong>
+                    {{ notable_moves|length }}
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    <!-- FEATURED POKEMON -->
+
+    <section class="featured-section">
+
+        <div class="section-header">
+
+            <h2 style="color: var(--type-color);">
+                ⭐ Featured {{ type_data.name.title() }} Pokémon
+            </h2>
+
+            <p>
+                Some of the most iconic Pokémon of this type.
+            </p>
+
+        </div>
+
+        <div class="featured-grid">
+            {% for pokemon in featured_pokemon %}
+
+<a href="/pokemon/{{ pokemon.name.lower() }}"
+   class="pokemon-card-link">
+
+    <div class="featured-card">
+
+        <img
+            src="{{ pokemon.image }}"
+            class="featured-image">
+
+        <h3>
+            {{ pokemon.name }}
+        </h3>
+
+    </div>
+
+</a>
+
+{% endfor %}
 
 </div>
+
+</section>
+
+<!-- MOVES & FACTS -->
+
+<div class="bottom-grid">
+
+    <div class="info-panel">
+
+        <h2 style="color: var(--type-color);">
+            ⚡ Notable Moves
+        </h2>
+
+        <div class="moves-grid">
+
+            {% for move in notable_moves %}
+
+            <span class="move-chip">
+                {{ move }}
+            </span>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+    <div class="info-panel">
+
+        <h2 style="color: var(--type-color);">
+            💡 Did You Know?
+        </h2>
+
+        <p class="fact-text">
+
+            {{ did_you_know }}
+
+        </p>
+
+    </div>
 
 </div>
 
 </div>
 
 </body>
+
 </html>

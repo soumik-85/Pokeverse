@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, session
 import requests
 import random
+import sqlite3
 
 all_pokemon_names = []
 
@@ -92,6 +93,48 @@ FEATURED_POKEMON = {
     "poison": ["nidoking", "toxicroak", "crobat", "toxapex", "gengar"],
     "flying": ["staraptor", "talonflame", "corviknight", "pidgeot", "noivern"],
     "normal": ["snorlax", "eevee", "porygon-z", "zangoose", "cinccino"]
+}
+
+TYPE_MOVES = {
+    "fire": ["Flamethrower", "Fire Blast", "Heat Wave", "Flare Blitz"],
+    "water": ["Surf", "Hydro Pump", "Scald", "Waterfall"],
+    "grass": ["Leaf Blade", "Leaf Storm", "Energy Ball", "Solar Beam"],
+    "electric": ["Thunderbolt", "Thunder", "Volt Tackle", "Wild Charge"],
+    "ice": ["Ice Beam", "Blizzard", "Freeze-Dry", "Icicle Crash"],
+    "fighting": ["Close Combat", "Aura Sphere", "Brick Break", "Mach Punch"],
+    "poison": ["Sludge Bomb", "Gunk Shot", "Cross Poison", "Toxic"],
+    "ground": ["Earthquake", "Bulldoze", "High Horsepower", "Earth Power"],
+    "flying": ["Brave Bird", "Hurricane", "Air Slash", "Fly"],
+    "psychic": ["Psychic", "Psyshock", "Future Sight", "Zen Headbutt"],
+    "bug": ["X-Scissor", "Bug Buzz", "Megahorn", "Signal Beam"],
+    "rock": ["Stone Edge", "Rock Slide", "Rock Tomb", "Power Gem"],
+    "ghost": ["Shadow Ball", "Shadow Sneak", "Hex", "Phantom Force"],
+    "dragon": ["Dragon Claw", "Outrage", "Draco Meteor", "Dragon Pulse"],
+    "dark": ["Crunch", "Dark Pulse", "Knock Off", "Night Slash"],
+    "steel": ["Iron Head", "Flash Cannon", "Steel Wing", "Meteor Mash"],
+    "fairy": ["Moonblast", "Dazzling Gleam", "Play Rough", "Draining Kiss"],
+    "normal": ["Hyper Beam", "Body Slam", "Extreme Speed", "Swift"]
+}
+
+TYPE_FACTS = {
+    "fire":"Fire types burn with powerful offensive attacks.",
+    "water":"Water is the most common Pokémon type.",
+    "grass":"Grass types excel at healing and status effects.",
+    "electric":"Electric Pokémon are among the fastest attackers.",
+    "ice":"Ice has some of the strongest offensive coverage in Pokémon.",
+    "fighting":"Fighting excels against Normal, Rock and Dark.",
+    "poison":"Poison specializes in wearing opponents down.",
+    "ground":"Ground is immune to Electric attacks.",
+    "flying":"Flying Pokémon avoid Ground-type attacks.",
+    "psychic":"Psychic once dominated competitive Pokémon.",
+    "bug":"Bug evolves earlier than most types.",
+    "rock":"Rock Pokémon have naturally high Defense.",
+    "ghost":"Ghost is immune to Normal and Fighting.",
+    "dragon":"Dragon Pokémon are usually rare and powerful.",
+    "dark":"Dark counters Psychic strategies.",
+    "steel":"Steel has the highest number of resistances.",
+    "fairy":"Fairy was introduced in Generation VI.",
+    "normal":"Normal Pokémon are the most versatile."
 }
 
 TYPES = [
@@ -440,35 +483,154 @@ def pokemon_details(name):
 
     from_type = request.args.get("from_type")
 
-    page = request.args.get("page") 
+    page = request.args.get("page")
 
-    pokemon_url = f"https://pokeapi.co/api/v2/pokemon/{name}"
+    pokemon = requests.get(
+        f"https://pokeapi.co/api/v2/pokemon/{name}"
+    ).json()
 
-    pokemon = requests.get(pokemon_url).json()
+    species = requests.get(
+        pokemon["species"]["url"]
+    ).json()
 
-    species_url = pokemon["species"]["url"]
+    evolution_data = requests.get(
+        species["evolution_chain"]["url"]
+    ).json()
 
-    species_data = requests.get(species_url).json()
+    evolution_chain = get_evolution_chain(
+        evolution_data["chain"]
+    )
 
-    evolution_chain_url = species_data["evolution_chain"]["url"]
+    overview = ""
 
-    evolution_data = requests.get(evolution_chain_url).json()
+    for entry in species["flavor_text_entries"]:
 
-    next_evolution = "No Further Evolution"
+        if entry["language"]["name"] == "en":
 
-    chain = evolution_data["chain"]
+            overview = (
+                entry["flavor_text"]
+                .replace("\n", " ")
+                .replace("\f", " ")
+            )
 
-    current_name = pokemon["name"]
+            break
+
+    category = "Unknown"
+
+    for genus in species["genera"]:
+
+        if genus["language"]["name"] == "en":
+
+            category = genus["genus"]
+
+            break
+
+    habitat = "Unknown"
+
+    if species["habitat"]:
+
+        habitat = species["habitat"]["name"].title()
+
+    generation = species["generation"]["name"] \
+        .replace("generation-", "Generation ") \
+        .upper()
+
+    top_moves = []
+
+    for move in pokemon["moves"][:6]:
+
+        move_data = requests.get(
+            move["move"]["url"]
+        ).json()
+
+        move_type = move_data["type"]["name"].title()
+
+        power = move_data["power"]
+
+        if power is None:
+
+            power = "--"
+
+        top_moves.append({
+
+            "name": move["move"]["name"]
+                    .replace("-", " ")
+                    .title(),
+
+            "type": move_type,
+
+            "power": power
+
+        })
+
+    max_stats = {
+
+        "hp":255,
+        "attack":190,
+        "defense":250,
+        "special-attack":194,
+        "special-defense":250,
+        "speed":200
+
+    }
+
+    for stat in pokemon["stats"]:
+
+        stat["width"] = (
+
+            stat["base_stat"] /
+            max_stats[stat["stat"]["name"]]
+
+        ) * 100
+
+        primary_type = pokemon["types"][0]["type"]["name"]    
+
+    return render_template(
+
+        "pokemon_details.html",
+
+        pokemon=pokemon,
+
+        page=page,
+
+        from_type=from_type,
+
+        random_mode=False,
+
+        overview=overview,
+
+        category=category,
+
+        habitat=habitat,
+
+        generation=generation,
+
+        evolution_chain=evolution_chain,
+
+        top_moves=top_moves,
+
+        primary_type=primary_type
+
+    )
+
+def get_evolution_chain(chain):
+
+    evolution = []
 
     while chain:
 
-        if chain["species"]["name"] == current_name:
+        pokemon_name = chain["species"]["name"]
 
-            if chain["evolves_to"]:
+        pokemon_data = requests.get(
+            f"https://pokeapi.co/api/v2/pokemon/{pokemon_name}"
+        ).json()
 
-                next_evolution = chain["evolves_to"][0]["species"]["name"].title()
+        artwork = pokemon_data["sprites"]["other"]["official-artwork"]["front_default"]
 
-            break
+        evolution.append({
+            "name": pokemon_name.title(),
+            "image": artwork
+        })
 
         if chain["evolves_to"]:
 
@@ -478,17 +640,7 @@ def pokemon_details(name):
 
             break
 
-        print("PAGE =", page)
-
-    return render_template (
-        "pokemon_details.html",
-        pokemon=pokemon,
-        next_evolution=next_evolution,
-        random_mode=False,
-        from_type=from_type,
-        page=page
-        
-    )
+    return evolution
 
 @app.route("/evolution")
 def evolution():
@@ -591,7 +743,9 @@ def type_details(type_name):
     type_color=type_colors.get(type_name, "#ffcb05"),
     mascot=mascot,
     type_description=type_description,
-    featured_pokemon=featured_pokemon
+    featured_pokemon=featured_pokemon,
+    notable_moves=TYPE_MOVES[type_name],
+    did_you_know=TYPE_FACTS[type_name],
     
 )
 
@@ -732,6 +886,202 @@ def evolution_quiz():
     return render_template(
         "evolution_quiz.html",
         question=question
+    )
+
+# ============================================================
+# GAMES
+# ============================================================
+
+DATABASE_PATH = "database/pokeverse.db"
+
+
+def get_database_connection():
+    connection = sqlite3.connect(DATABASE_PATH)
+    connection.row_factory = sqlite3.Row
+    connection.execute("PRAGMA foreign_keys = ON")
+    return connection
+
+
+@app.route("/games")
+def games_home():
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM games
+        ORDER BY generation, display_order
+    """)
+
+    games = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "games/games_home.html",
+        games=games
+    )
+
+
+@app.route("/games/generation/<int:generation>")
+def generation_page(generation):
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM games
+        WHERE generation = ?
+        ORDER BY display_order
+    """, (generation,))
+
+    games = cursor.fetchall()
+
+    connection.close()
+
+    if not games:
+        return "Generation not found", 404
+
+    return render_template(
+        "games/generation.html",
+        generation=generation,
+        games=games
+    )
+
+
+@app.route("/games/<slug>")
+def game_details(slug):
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    # --------------------------------------------------------
+    # Main game
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT *
+        FROM games
+        WHERE slug = ?
+    """, (slug,))
+
+    game = cursor.fetchone()
+
+    if game is None:
+        connection.close()
+        return "Game not found", 404
+
+    # --------------------------------------------------------
+    # Key features
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT feature
+        FROM game_features
+        WHERE game_slug = ?
+        ORDER BY id
+    """, (slug,))
+
+    features = cursor.fetchall()
+
+    # --------------------------------------------------------
+    # Challenges
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT
+            challenge_type,
+            challenge_name,
+            leader_name,
+            challenge_order
+        FROM game_challenges
+        WHERE game_slug = ?
+        ORDER BY challenge_order
+    """, (slug,))
+
+    challenges = cursor.fetchall()
+
+    # --------------------------------------------------------
+    # Starter Pokémon
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT pokemon_name
+        FROM game_starters
+        WHERE game_slug = ?
+        ORDER BY id
+    """, (slug,))
+
+    starters = cursor.fetchall()
+
+    # --------------------------------------------------------
+    # Legendary Pokémon
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT pokemon_name
+        FROM game_legendaries
+        WHERE game_slug = ?
+        ORDER BY id
+    """, (slug,))
+
+    legendaries = cursor.fetchall()
+
+    # --------------------------------------------------------
+    # Related games
+    #
+    # Join back to games so the template receives the complete
+    # game records instead of only the related slugs.
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        SELECT g.*
+        FROM related_games r
+        JOIN games g
+            ON g.slug = r.related_slug
+        WHERE r.game_slug = ?
+        ORDER BY g.generation, g.display_order
+    """, (slug,))
+
+    related_games = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "games/game_details.html",
+        game=game,
+        features=features,
+        challenges=challenges,
+        starters=starters,
+        legendaries=legendaries,
+        related_games=related_games
+    )
+
+# ============================================================
+# TIMELINE
+# ============================================================
+
+@app.route("/timeline")
+def timeline():
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT *
+        FROM timeline_events
+        ORDER BY year, month, id
+    """)
+
+    events = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "timeline.html",
+        events=events
     )
 
 if __name__ == "__main__":

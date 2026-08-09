@@ -5,131 +5,438 @@
 
     <title>{{ pokemon.name.title() }}</title>
 
-    <link rel="stylesheet"
-          href="{{ url_for('static', filename='css/style.css') }}">
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static',
+        filename='css/style.css') }}">
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static',
+        filename='css/pokemon_details.css') }}">
 
 </head>
 
 <body>
-    {% if page %}
-    <a href="/pokedex?page={{ page }}" class="back-btn">
-        ← Back to Pokédex
-    </a>
+
+{% if page %}
+
+<a href="/pokedex?page={{ page }}" class="back-btn">
+    ← Back to Pokédex
+</a>
 
 {% elif from_type %}
-    <a href="/types/{{ from_type }}" class="back-btn">
-        ← Back to Type
-    </a>
+
+<a href="/types/{{ from_type }}" class="back-btn">
+    ← Back to Type
+</a>
 
 {% else %}
-    <a href="/pokemon" class="back-btn">
-        ← Back
-    </a>
+
+<a href="/pokemon" class="back-btn">
+    ← Back
+</a>
+
 {% endif %}
 
-    <div class="pokemon-header">
 
-    <h1 class="page-title">
-        {{ pokemon.name.title() }}
-    </h1>
 
-    <p class="pokemon-id">
-        #{{ "%03d"|format(pokemon.id) }}
+<div class="pokemon-container">
+
+<!-- ================= HERO ================= -->
+
+<section class="hero-section">
+
+    <div class="hero-glow {{ pokemon.types[0].type.name }}"></div>
+
+    <div class="hero-image">
+
+        <img
+            src="{{ pokemon.sprites.other['official-artwork'].front_default }}"
+            alt="{{ pokemon.name }}">
+
+    </div>
+
+    <div class="hero-content">
+
+        <span class="pokemon-number">
+
+            #{{ "%03d"|format(pokemon.id) }}
+
+        </span>
+
+        <h1>
+
+            {{ pokemon.name.title() }}
+
+        </h1>
+
+        <p class="pokemon-category">
+
+            {{ category }}
+
+        </p>
+
+        <p class="pokemon-generation">
+
+            {{ generation }}
+
+        </p>
+
+        <div class="type-container">
+
+            {% for type in pokemon.types %}
+
+            <span class="type-badge {{ type.type.name }}">
+
+                {{ type.type.name.title() }}
+
+            </span>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= OVERVIEW ================= -->
+
+<section class="section-card">
+
+    <h2>
+
+        Overview
+
+    </h2>
+
+    <p class="overview-text">
+
+        {{ overview }}
+
     </p>
 
-</div>
+</section>
 
-    <div class="pokemon-details">
 
-        <div class="pokemon-image-section">
 
-            <img
-    src="{{ pokemon.sprites.other['official-artwork'].front_default }}"
-    alt="{{ pokemon.name }}">
+<!-- ================= QUICK INFO ================= -->
+
+<section class="quick-info">
+
+    <div class="info-card">
+
+        <div class="info-title">
+
+            Height
 
         </div>
 
-        <div class="pokemon-info-section">
+        <div class="info-value">
 
-            <h2>Type</h2>
+            {{ pokemon.height / 10 }} m
 
-<div class="type-container">
+        </div>
 
-    {% for type in pokemon.types %}
+    </div>
 
-    <span class="type-badge">
-        {{ type.type.name.title() }}
+    <div class="info-card">
+
+        <div class="info-title">
+
+            Weight
+
+        </div>
+
+        <div class="info-value">
+
+            {{ pokemon.weight / 10 }} kg
+
+        </div>
+
+    </div>
+
+    <div class="info-card">
+
+        <div class="info-title">
+
+            Category
+
+        </div>
+
+        <div class="info-value">
+
+            {{ category }}
+
+        </div>
+
+    </div>
+
+    <div class="info-card">
+
+        <div class="info-title">
+
+            Habitat
+
+        </div>
+
+        <div class="info-value">
+
+            {{ habitat }}
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= BASE STATS ================= -->
+
+<section class="section-card">
+
+<h2>
+
+Base Stats
+
+</h2>
+
+<div class="stats-grid">
+
+    <!-- LEFT COLUMN -->
+
+    <div class="stats-column">
+
+        {% for stat in pokemon.stats[:3] %}
+
+        <div class="stat-item">
+
+    <span class="stat-name">
+
+        {{ stat.stat.name.replace("-", " ").title() }}
+
     </span>
 
-    {% endfor %}
+    <div class="stat-bar">
 
-</div>
-
-     <h2>Info</h2>
-
-<div class="stats-grid">
-
-    <div class="stat-card">
-        <span>Height</span>
-        <strong>{{ pokemon.height }}</strong>
-    </div>
-
-    <div class="stat-card">
-        <span>Weight</span>
-        <strong>{{ pokemon.weight }}</strong>
-    </div>
-
-</div>
-
-            <h2>Stats</h2>
-
-<div class="stats-grid">
-
-    {% for stat in pokemon.stats %}
-
-    <div class="stat-card">
-
-        <span>{{ stat.stat.name.title() }}</span>
-
-        <strong>{{ stat.base_stat }}</strong>
-
-    </div>
-
-    {% endfor %}
-
-</div>
-
-            <h2>Abilities</h2>
-
-            <ul>
-                {% for ability in pokemon.abilities %}
-                    <li>
-                        {{ ability.ability.name.title() }}
-                    </li>
-                {% endfor %}
-            </ul>
-
-            <h2>Evolution</h2>
-
-           <div class="evolution-box">
-    {{ next_evolution }}
-</div>
-
+        <div class="stat-fill"
+             style="width: {{ stat.width }}%;">
         </div>
 
     </div>
 
-    {% if random_mode %}
+    <span class="stat-value">
+
+        {{ stat.base_stat }}
+
+    </span>
+
+</div>
+
+        {% endfor %}
+
+    </div>
+
+
+
+    <div class="stats-divider"></div>
+
+
+
+    <!-- RIGHT COLUMN -->
+
+    <div class="stats-column">
+
+        {% for stat in pokemon.stats[3:] %}
+
+        <div class="stat-item">
+
+            <div class="stat-header">
+
+                <span class="stat-name">
+
+                    {{ stat.stat.name.replace("-", " ").title() }}
+
+                </span>
+
+            </div>
+
+            <div class="stat-bar">
+
+                <div class="stat-fill"
+
+                     style="width: {{ stat.width }}%;">
+
+                </div>
+
+            </div>
+
+            <span class="stat-value">
+
+                    {{ stat.base_stat }}
+
+                </span>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+</section>
+
+
+
+<!-- ================= ABILITIES ================= -->
+
+<section class="section-card">
+
+    <h2>
+
+        Abilities
+
+    </h2>
+
+    <div class="ability-grid">
+
+        {% for ability in pokemon.abilities %}
+
+        <div class="ability-card">
+
+    {{ ability.ability.name.replace("-", " ").title() }}
+
+</div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+
+
+<!-- ================= EVOLUTION ================= -->
+
+<section class="section-card">
+
+<h2>
+
+Evolution Chain
+
+</h2>
+
+<div class="evolution-chain">
+
+            {% for evo in evolution_chain %}
+
+        <div class="evolution-card">
+
+            <img
+                src="{{ evo.image }}"
+                alt="{{ evo.name }}">
+
+            <h3>
+
+                {{ evo.name }}
+
+            </h3>
+
+        </div>
+
+        {% if not loop.last %}
+
+        <div class="evolution-arrow">
+
+            →
+
+        </div>
+
+        {% endif %}
+
+        {% endfor %}
+
+</div>
+
+</section>
+
+
+
+<!-- ================= TOP MOVES ================= -->
+
+<section class="section-card">
+
+<h2>
+
+Top Moves
+
+</h2>
+
+<div class="moves-grid">
+
+{% for move in top_moves %}
+
+<div class="move-card">
+
+    <div class="move-left">
+
+        <h3>
+
+            {{ move.name }}
+
+        </h3>
+
+        <span class="move-type">
+
+            {{ move.type }}
+
+        </span>
+
+    </div>
+
+    <div class="move-right">
+
+        {% if move.power != "--" %}
+
+        {{ move.power }}
+
+        {% else %}
+
+        —
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+</section>
+
+{% if random_mode %}
 
 <div class="generate-container">
 
-    <a href="/random/generate" class="generate-btn">
-        Random
+    <a href="/random/generate"
+       class="generate-btn">
+
+        🎲 Random Pokémon
+
     </a>
 
 </div>
 
 {% endif %}
+
+</div>
 
 </body>
 

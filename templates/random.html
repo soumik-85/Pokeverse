@@ -1,34 +1,100 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 
-    <title>Random Pokémon</title>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Random Pokémon | PokeVerse</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/random.css') }}">
 
 </head>
 
 <body>
 
-    </a>
+<a href="/" class="back-btn">
+    ← Back
+</a>
 
-<div class="random-page">
+<div class="random-container">
 
-    <h1 class="page-title">
-        🎲 Random Pokémon
-    </h1>
+    <div class="random-header">
 
-    <p class="random-text">
-        Feeling lucky?
-    </p>
+        <h1>
 
-    <a href="/random/generate" class="generate-btn">
-        Generate Pokémon
+            Random Pokémon
+
+        </h1>
+
+        <p>
+
+            Discover a random Pokémon from all 1025 Pokémon.
+
+        </p>
+
+    </div>
+
+    <div class="button-area">
+
+        <button id="generateBtn">
+
+            🎲 Generate Pokémon
+
+        </button>
+
+    </div>
+
+    <div class="random-content" id="randomContent">
+
+    <a class="random-card" id="pokemonCard" href="#">
+
+        <div class="card-image">
+
+            <img id="pokemonImage"
+                 src=""
+                 alt="Pokemon">
+
+        </div>
+
+        <div class="card-divider"></div>
+
+        <div class="card-body">
+
+            <h2 id="pokemonName">
+
+                Loading...
+
+            </h2>
+
+            <p id="pokemonNumber">
+
+                #000
+
+            </p>
+
+            <div id="pokemonTypes"
+                 class="type-container">
+
+            </div>
+
+        </div>
+
     </a>
 
 </div>
+
+</div>
+
+<script src="{{ url_for('static',
+filename='js/random.js') }}"></script>
 
 </body>
 

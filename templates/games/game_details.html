@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ game.name }} | PokeVerse</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/games.css') }}">
+</head>
+
+<body>
+
+<div class="game-details-page">
+
+    <!-- ======================================================
+         BACK
+         ====================================================== -->
+
+    <a href="/games" class="game-back-button">
+        ← Back to Games
+    </a>
+
+
+    <!-- ======================================================
+         HERO
+         ====================================================== -->
+
+    <section class="game-hero"
+             style="--game-accent: {{ game.accent_color }};">
+
+        <div class="game-hero-cover">
+
+            <img
+                src="{{ url_for('static',
+                filename='images/games/' + game.cover_image) }}"
+                alt="{{ game.name }}"
+                onerror="
+                    if (this.dataset.tried !== '1') {
+                        this.dataset.tried = '1';
+                        this.src = this.src.toLowerCase().endsWith('.jpg')
+                            ? this.src.replace(/\.jpg$/i, '.png')
+                            : this.src.replace(/\.png$/i, '.jpg');
+                    }
+                "
+            >
+
+        </div>
+
+
+        <div class="game-hero-content">
+
+            <span class="game-hero-kicker">
+                GENERATION {{ game.generation }}
+            </span>
+
+            <p class="game-hero-label">Pokémon</p>
+
+            <h1>{{ game.name }}</h1>
+
+            <p class="game-hero-description">
+                {{ game.hero_description }}
+            </p>
+
+
+            <div class="game-hero-stats">
+
+                <div class="hero-stat">
+                    <span>Release</span>
+                    <strong>{{ game.worldwide_release }}</strong>
+                </div>
+
+                <div class="hero-stat">
+                    <span>Region</span>
+                    <strong>{{ game.region|title }}</strong>
+                </div>
+
+                <div class="hero-stat">
+                    <span>Generation</span>
+                    <strong>{{ game.generation }}</strong>
+                </div>
+
+                <div class="hero-stat">
+                    <span>Avg. Play Time</span>
+                    <strong>{{ game.average_play_time }}</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ======================================================
+         OVERVIEW + RELEASE INFORMATION
+         ====================================================== -->
+
+    <section class="details-two-column">
+
+        <article class="details-panel overview-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Overview</h2>
+            </div>
+
+<div class="overview-content">
+
+    <p>
+        {{ game.overview }}
+    </p>
+
+<div class="overview-visual">
+
+    <img
+        src="{{ url_for('static',
+        filename='images/overview/' + game.slug + '_overview.jpg') }}"
+        alt="{{ game.name }} Overview"
+        onerror="
+            if (this.dataset.tried !== '1') {
+                this.dataset.tried = '1';
+                this.src = this.src.replace(/\.jpg$/i, '.png');
+            }
+        "
+    >
+
+</div>
+
+</div>
+
+        </article>
+
+
+        <article class="details-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Release Information</h2>
+            </div>
+
+            <div class="release-list">
+
+                <div class="release-row">
+                    <span>Japan Release</span>
+                    <strong>{{ game.japan_release }}</strong>
+                </div>
+
+                <div class="release-row">
+                    <span>Worldwide Release</span>
+                    <strong>{{ game.worldwide_release }}</strong>
+                </div>
+
+                <div class="release-row">
+                    <span>Platform</span>
+                    <strong>{{ game.platform }}</strong>
+                </div>
+
+                <div class="release-row">
+                    <span>Developer</span>
+                    <strong>{{ game.developer }}</strong>
+                </div>
+
+                <div class="release-row">
+                    <span>Publisher</span>
+                    <strong>{{ game.publisher }}</strong>
+                </div>
+
+            </div>
+
+        </article>
+
+    </section>
+
+
+    <!-- ======================================================
+         REGION + FEATURES
+         ====================================================== -->
+
+    <section class="details-two-column region-feature-row">
+
+        <article class="details-panel region-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>{{ game.region|title }} Region</h2>
+            </div>
+
+            <div class="region-content">
+
+<div class="region-visual">
+
+    <img
+        src="{{ url_for('static',
+        filename='images/region/' + game.region + '.jpg') }}"
+        alt="{{ game.region|title }} Region"
+        onerror="
+            if (this.dataset.tried !== '1') {
+                this.dataset.tried = '1';
+                this.src = this.src.replace(/\.jpg$/i, '.png');
+            }
+        "
+    >
+
+</div>
+
+                <p>
+                    {{ game.region_description }}
+                </p>
+
+            </div>
+
+        </article>
+
+
+        <article class="details-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Key Features</h2>
+            </div>
+
+            <ul class="feature-list">
+
+                {% for feature in features %}
+
+                <li>
+                    <span>•</span>
+                    <p>{{ feature.feature }}</p>
+                </li>
+
+                {% else %}
+
+                <li class="empty-state">
+                    <p>No key features have been added yet.</p>
+                </li>
+
+                {% endfor %}
+
+            </ul>
+
+        </article>
+
+    </section>
+
+
+    <!-- ======================================================
+         CHALLENGES
+         ====================================================== -->
+
+    {% if challenges %}
+
+<section class="details-panel full-panel challenges-panel">
+
+    <div class="panel-heading">
+        <span></span>
+        <h2>Gyms & Challenges</h2>
+    </div>
+
+    <div class="challenge-columns">
+
+        <!-- =========================
+             GYM LEADERS
+             ========================= -->
+
+        <div class="challenge-column">
+
+            <h3 class="challenge-column-title">
+                Gym Leaders
+            </h3>
+
+            <div class="compact-challenge-list">
+
+                {% for challenge in challenges
+                    if challenge.challenge_type|lower == "gym" %}
+
+                <div class="compact-challenge">
+
+                    <div class="compact-order">
+                        {{ "%02d"|format(challenge.challenge_order) }}
+                    </div>
+
+                    <div class="compact-info">
+
+                        <strong>
+                            {{ challenge.challenge_name }}
+                        </strong>
+
+                        <span>
+                            {{ challenge.leader_name }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+
+        <!-- =========================
+             ELITE FOUR + CHAMPION
+             ========================= -->
+
+        <div class="challenge-column">
+
+            <h3 class="challenge-column-title">
+                Elite Four & Champion
+            </h3>
+
+            <div class="compact-challenge-list">
+
+                {% for challenge in challenges
+                    if challenge.challenge_type|lower in ["elite four", "champion"] %}
+
+                <div class="compact-challenge
+                    {% if challenge.challenge_type|lower == 'champion' %}
+                        champion-challenge
+                    {% endif %}
+                ">
+
+                    <div class="compact-order">
+
+                        {% if challenge.challenge_type|lower == "champion" %}
+                            ★
+                        {% else %}
+                            {{ "%02d"|format(challenge.challenge_order) }}
+                        {% endif %}
+
+                    </div>
+
+                    <div class="compact-info">
+
+                        <strong>
+                            {{ challenge.challenge_name }}
+                        </strong>
+
+                        <span>
+                            {{ challenge.leader_name }}
+                        </span>
+
+                    </div>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endif %}
+
+
+    <!-- ======================================================
+         STARTERS + LEGENDARIES
+         ====================================================== -->
+
+    <section class="details-two-column pokemon-row">
+
+        {% if starters %}
+
+        <article class="details-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Starter Pokémon</h2>
+            </div>
+
+            <div class="pokemon-card-grid">
+
+                {% for starter in starters %}
+
+                <div class="pokemon-card"
+                     data-pokemon="{{ starter.pokemon_name }}">
+
+                    <div class="pokemon-artwork">
+                        <span class="pokemon-loading">...</span>
+                    </div>
+
+                    <strong>
+                        {{ starter.pokemon_name
+                           |replace("-", " ")
+                           |title }}
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </article>
+
+        {% endif %}
+
+
+        {% if legendaries %}
+
+        <article class="details-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Legendary Pokémon</h2>
+            </div>
+
+            <div class="pokemon-card-grid legendary-pokemon-grid">
+
+                {% for legendary in legendaries %}
+
+                <div class="pokemon-card legendary-pokemon-card"
+                     data-pokemon="{{ legendary.pokemon_name }}">
+
+                    <div class="pokemon-artwork">
+                        <span class="pokemon-loading">...</span>
+                    </div>
+
+                    <strong>
+                        {{ legendary.pokemon_name
+                           |replace("-", " ")
+                           |title }}
+                    </strong>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+        </article>
+
+        {% endif %}
+
+    </section>
+
+
+    <!-- ======================================================
+         DIFFICULTY + RELATED GAMES
+         ====================================================== -->
+
+    <section class="details-two-column bottom-row">
+
+        <article class="details-panel difficulty-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Difficulty</h2>
+            </div>
+
+            <div class="difficulty-meter">
+
+                <div class="difficulty-scale">
+
+                    <div class="difficulty-track">
+                        <div class="difficulty-fill"
+                             style="width: {{ game.difficulty }}%;">
+                        </div>
+                    </div>
+
+                    <div class="difficulty-labels">
+                        <span>Easy</span>
+                        <span>Hard</span>
+                    </div>
+
+                </div>
+
+                <div class="difficulty-score">
+                    <strong>{{ game.difficulty }}</strong>
+                    <span>/100</span>
+                </div>
+
+                <p class="difficulty-name">
+
+                    {% if game.difficulty < 35 %}
+                        Easy
+                    {% elif game.difficulty < 65 %}
+                        Moderate
+                    {% else %}
+                        Hard
+                    {% endif %}
+
+                </p>
+
+            </div>
+
+        </article>
+
+
+        {% if related_games %}
+
+        <article class="details-panel related-panel">
+
+            <div class="panel-heading">
+                <span></span>
+                <h2>Related Games</h2>
+            </div>
+
+            <div class="related-games-grid">
+
+                {% for related in related_games %}
+
+                <a href="/games/{{ related.slug }}"
+                   class="related-game-card">
+
+                    <div class="related-cover">
+
+                        <img
+                            src="{{ url_for('static',
+                            filename='images/games/' + related.cover_image) }}"
+                            alt="{{ related.name }}"
+                            onerror="
+                                if (this.dataset.tried !== '1') {
+                                    this.dataset.tried = '1';
+                                    this.src = this.src.toLowerCase().endsWith('.jpg')
+                                        ? this.src.replace(/\.jpg$/i, '.png')
+                                        : this.src.replace(/\.png$/i, '.jpg');
+                                }
+                            "
+                        >
+
+                    </div>
+
+                    <div class="related-game-info">
+
+                        <h3>{{ related.name }}</h3>
+
+                        <span>
+                            {{ related.worldwide_release[:4] }}
+                        </span>
+
+                    </div>
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+        </article>
+
+        {% endif %}
+
+    </section>
+
+
+</div>
+
+
+<!-- ==========================================================
+     POKÉMON ARTWORK
+     Uses the existing PokeAPI project ecosystem.
+     ========================================================== -->
+
+<script>
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const pokemonCards =
+        document.querySelectorAll("[data-pokemon]");
+
+    pokemonCards.forEach(async (card) => {
+
+let pokemonName =
+    card.dataset.pokemon
+        .toLowerCase()
+        .trim();
+
+const pokemonAliases = {
+    "tornadus": "tornadus-incarnate",
+    "thundurus": "thundurus-incarnate",
+    "landorus": "landorus-incarnate"
+};
+
+pokemonName =
+    pokemonAliases[pokemonName] || pokemonName;
+
+        const artworkContainer =
+            card.querySelector(".pokemon-artwork");
+
+        try {
+
+            const response = await fetch(
+                `https://pokeapi.co/api/v2/pokemon/${pokemonName}`
+            );
+
+            if (!response.ok) {
+                throw new Error("Pokémon not found");
+            }
+
+            const data = await response.json();
+
+            const artwork =
+                data.sprites?.other?.["official-artwork"]?.front_default
+                || data.sprites?.front_default;
+
+            if (!artwork) {
+                throw new Error("Artwork unavailable");
+            }
+
+            const image =
+                document.createElement("img");
+
+            image.src = artwork;
+            image.alt = card.querySelector("strong").textContent.trim();
+
+            artworkContainer.innerHTML = "";
+            artworkContainer.appendChild(image);
+
+        } catch (error) {
+
+            artworkContainer.innerHTML =
+                '<span class="pokemon-artwork-fallback">?</span>';
+
+        }
+
+    });
+
+});
+
+</script>
+
+</body>
+</html>

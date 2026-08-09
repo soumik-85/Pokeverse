@@ -1,0 +1,121 @@
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Pokémon Games | PokeVerse</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/games.css') }}">
+
+
+<!-- Back Button -->
+
+<a href="/" class="games-back">
+    ← Back
+</a>
+
+
+<!-- Games Header -->
+
+<div class="games-header">
+
+    <h1>
+        Pokémon Games
+    </h1>
+
+    <p>
+        Explore every main series Pokémon game from
+        Generation I to Generation IX.
+    </p>
+
+</div>
+
+
+{% set generations = [
+
+    (1, "Generation I", "Kanto Region", "1996–1999"),
+
+    (2, "Generation II", "Johto Region", "1999–2001"),
+
+    (3, "Generation III", "Hoenn Region", "2002–2005"),
+
+    (4, "Generation IV", "Sinnoh Region", "2006–2010"),
+
+    (5, "Generation V", "Unova Region", "2010–2012"),
+
+    (6, "Generation VI", "Kalos Region", "2013–2016"),
+
+    (7, "Generation VII", "Alola Region", "2016–2018"),
+
+    (8, "Generation VIII", "Galar / Hisui", "2019–2022"),
+
+    (9, "Generation IX", "Paldea Region", "2022–Present")
+
+] %}
+
+
+{% for gen_id, gen_name, region_name, years in generations %}
+
+<div class="generation-header">
+
+    <h2>
+        {{ gen_name }}
+    </h2>
+
+    <p>
+        {{ region_name }} • {{ years }}
+    </p>
+
+</div>
+
+
+<div class="games-grid">
+
+    {% for game in games if game.generation == gen_id %}
+
+    <a
+        href="/games/{{ game.slug }}"
+        class="game-card"
+    >
+
+<div class="cover-container">
+
+    <img
+    src="{{ url_for('static', filename='images/games/' + game.cover_image) }}"
+    alt="{{ game.name }}"
+    onerror="
+        if (this.dataset.tried !== '1') {
+            this.dataset.tried = '1';
+            this.src = this.src.toLowerCase().endsWith('.jpg')
+                ? this.src.replace(/\.jpg$/i, '.png')
+                : this.src.replace(/\.png$/i, '.jpg');
+        }
+    "
+>
+
+</div>
+
+
+        <div class="game-info">
+
+            <h3>
+                {{ game.name }}
+            </h3>
+
+            <span>
+                {{ game.worldwide_release[:4] }}
+            </span>
+
+        </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+{% endfor %}

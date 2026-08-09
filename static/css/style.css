@@ -2974,3 +2974,37 @@ a{
     text-decoration:none;
     color:inherit;
 }
+
+/* TEMPORARY DEBUG */
+
+.overview-heading h1{
+    color:white !important;
+}
+
+.overview-heading p{
+    color:#d0d0d0 !important;
+}
+
+.info-panel{
+    color:white !important;
+}
+
+.info-panel h2{
+    color:inherit !important;
+}
+
+.info-panel h3{
+    color:white !important;
+}
+
+.info-panel p{
+    color:#d0d0d0 !important;
+}
+
+.info-panel li{
+    color:#d0d0d0 !important;
+}
+
+.info-panel strong{
+    color:white !important;
+}

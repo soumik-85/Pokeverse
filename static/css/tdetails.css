@@ -1,0 +1,70 @@
+
+/* PokeVerse Type Details */
+
+.type-hero{display:flex;justify-content:space-between;align-items:center;gap:40px;padding:40px;margin:30px 0;border:2px solid var(--type-color);border-radius:24px;background:linear-gradient(135deg,#181818,#101010);position:relative;overflow:hidden}
+.hero-left{flex:1;z-index:2}
+.hero-right{flex:0 0 320px;display:flex;justify-content:center;align-items:center;position:relative}
+.hero-icon{width:60px;height:60px;margin-right:18px}
+.hero-title{display:flex;align-items:center;margin-bottom:20px}
+.hero-label{display:block;color:#aaa;text-transform:uppercase;letter-spacing:2px;font-size:.8rem;margin-bottom:6px}
+.hero-title h1{margin:0;color:var(--type-color);font-size:3rem}
+.hero-description{color:#ddd;line-height:1.8;max-width:650px;margin-bottom:28px}
+.hero-facts{display:flex;gap:18px;flex-wrap:wrap}
+.fact-card{background:#1b1b1b;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 22px;min-width:120px;transition:.3s}
+.fact-card:hover{transform:translateY(-4px);border-color:var(--type-color)}
+.fact-title{display:block;color:#aaa;font-size:.8rem;margin-bottom:8px}
+.fact-value{color:#fff;font-size:1.1rem;font-weight:700}
+.hero-mascot{width:280px;position:relative;z-index:2}
+.hero-bg-icon{position:absolute;width:340px;opacity:.05}
+.type-info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:24px;margin:40px 0}
+.info-panel{background:#181818;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:24px;transition:.3s}
+.info-panel:hover{border-color:var(--type-color);transform:translateY(-5px)}
+.badge-container{display:flex;flex-wrap:wrap;gap:10px}
+.section-gap{margin-top:24px}
+.facts-list{list-style:none;padding:0;margin:0}
+.facts-list li{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.featured-section{margin:50px 0}
+.section-header{text-align:center;margin-bottom:30px}
+.moves-grid{display:flex;flex-wrap:wrap;gap:12px}
+.move-chip{background:var(--type-color);color:#111;padding:10px 16px;border-radius:999px;font-weight:700}
+.bottom-grid{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin:40px 0}
+.fact-text{color:#ddd;line-height:1.8}
+@media(max-width:900px){
+.type-hero{flex-direction:column;text-align:center}
+.hero-title{justify-content:center}
+.hero-facts{justify-content:center}
+.bottom-grid{grid-template-columns:1fr}
+.overview-heading{
+    margin:35px 0 25px;
+}
+
+.overview-heading h1{
+    color:#fff;
+    font-size:2.2rem;
+    font-weight:700;
+    margin-bottom:8px;
+}
+
+.overview-heading p{
+    color:#9ca3af;
+    font-size:1rem;
+    line-height:1.6;
+}
+
+.back-btn{
+    display:inline-block;
+    margin-top:20px;
+    margin-bottom:15px;
+}
+
+.info-panel,
+.info-panel h3,
+.info-panel p,
+.info-panel li,
+.info-panel strong{
+
+    color:#fff;
+
+}
+
+}

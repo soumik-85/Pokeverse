@@ -29,19 +29,19 @@
 
     </div>
 
-    <ul>
+<ul>
 
-        <li><a class="active" href="/">Home</a></li>
+    <li><a class="active" href="/">Home</a></li>
 
-        <li><a href="/pokemon">Pokémon</a></li>
+    <li><a href="/pokemon">Pokémon</a></li>
 
-        <li><a href="#">World</a></li>
+    <li><a href="/games">Games</a></li>
 
-        <li><a href="#">Media</a></li>
+    <li><a href="/quiz">Quiz</a></li>
 
-        <li><a href="#">Timeline</a></li>
+    <li><a href="/timeline">Timeline</a></li>
 
-    </ul>
+</ul>
 
 </nav>
 
@@ -140,16 +140,16 @@
         <div class="stat-item">
 
             <div class="stat-icon">
-                <img src="{{ url_for('static', filename='images/icons/world.svg') }}">
+                <img src="{{ url_for('static', filename='images/icons/timeline.svg') }}">
             </div>
 
             <div class="stat-info">
 
-                <h2>9</h2>
+                <h2>25</h2>
 
-                <h3>Regions</h3>
+                <h3>Timeline Events</h3>
 
-                <p>Across the World</p>
+                <p>1996 - 2026</p>
 
             </div>
 
@@ -225,11 +225,11 @@
 
 <a href="/pokemon" class="feature-card">
 
-    <img src="{{ url_for('static', filename='images/cards/pikachu.jpg') }}">
+    <img src="{{ url_for('static', filename='images/cards/pokemon.jpg') }}">
 
     <div class="card-content">
 
-        <h3>Pokémon</h3>
+        <h3>Pokédex</h3>
 
         <p>
 
@@ -257,25 +257,21 @@
 
 <!-- World -->
 
-<div class="feature-card">
+<a href="/games" class="feature-card">
 
-    <img src="{{ url_for('static', filename='images/cards/world.png') }}">
+    <img src="{{ url_for('static', filename='images/cards/games.jpg') }}">
 
     <div class="card-content">
 
-        <h3>World</h3>
+<h3>Games</h3>
 
-        <p>
+<p>
 
-            Explore every region,
+    Explore every main series
+    Pokémon game from
+    Generation I to IX.
 
-            Gym Leader,
-
-            Champion
-
-            and more.
-
-        </p>
+</p>
 
         <div class="card-arrow">
 
@@ -285,27 +281,27 @@
 
     </div>
 
-</div>
+</a>
 
 <!-- Media -->
 
-<div class="feature-card">
+<a href="/quiz" class="feature-card">
 
-    <img src="{{ url_for('static', filename='images/cards/media.jpg') }}">
+    <img src="{{ url_for('static', filename='images/cards/quiz.jpg') }}">
 
     <div class="card-content">
 
-        <h3>Media</h3>
+        <h3>Quiz center</h3>
 
         <p>
 
-            Movies,
+            guess the Pokemon,
 
-            Anime,
+            Type,
 
-            Specials
+            Next evolution,
 
-            and everything Pokémon.
+            and Final 10 questions shodown.
 
         </p>
 
@@ -321,7 +317,7 @@
 
 <!-- Timeline -->
 
-<div class="feature-card">
+<a href="/timeline" class="feature-card">
 
     <img src="{{ url_for('static', filename='images/cards/starters.jpg') }}">
 
@@ -345,7 +341,7 @@
 
     </div>
 
-</div>
+</a>
 
 </section>
 
