@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, session
+import os
 import requests
 import random
 import sqlite3
@@ -160,7 +161,10 @@ TYPES = [
 
 app = Flask(__name__)
 
-app.secret_key = "pokeverse_master_challenge"
+app.secret_key = os.environ.get(
+    "SECRET_KEY",
+    "pokeverse_master_challenge"
+)
 
 def get_next_evolution(pokemon):
 
@@ -1085,4 +1089,4 @@ def timeline():
     )
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
