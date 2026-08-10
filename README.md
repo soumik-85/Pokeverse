@@ -325,44 +325,60 @@ PokeVerse/
 ├── timeline.sql
 │
 ├── database/
-│   ├── pokeverse.db
-│   ├── setup_db.py
-│   ├── insert_games.py
-│   ├── insert_features.py
 │   ├── insert_challenges.py
-│   ├── insert_starters.py
+│   ├── insert_features.py
+│   ├── insert_games.py
 │   ├── insert_legendaries.py
 │   ├── insert_related.py
-│   └── insert_timeline.py
+│   ├── insert_starters.py
+│   ├── insert_timeline.py
+│   ├── pokeverse.db
+│   └── setup_db.py
 │
 ├── static/
 │   ├── css/
-│   │   ├── style.css
 │   │   ├── games.css
+│   │   ├── home.css
 │   │   ├── pokemon_details.css
 │   │   ├── random.css
+│   │   ├── style.css
 │   │   ├── tdetails.css
 │   │   └── timeline.css
 │   │
 │   ├── js/
-│   │   └── random.js
+│   │   ├── random.js
+│   │   └── script.js
 │   │
 │   └── images/
 │       ├── cards/
 │       ├── games/
 │       ├── icons/
 │       ├── overview/
+│       ├── ranks/
 │       ├── region/
-│       └── timeline/
+│       ├── timeline/
+│       └── types/
 │
 └── templates/
+    ├── compare.html
+    ├── compare_result.html
+    ├── evolution.html
+    ├── evolution_quiz.html
     ├── index.html
-    ├── pokemon_hub.html
+    ├── pokemon.html
     ├── pokemon_details.html
+    ├── pokemon_hub.html
     ├── quiz.html
+    ├── quiz_master.html
+    ├── quiz_play.html
+    ├── quiz_results.html
+    ├── quiz_who_pokemon.html
     ├── random.html
-    ├── type_details.html
     ├── timeline.html
+    ├── types.html
+    ├── type_chart.html
+    ├── type_details.html
+    ├── type_quiz.html
     │
     └── games/
         ├── games_home.html
