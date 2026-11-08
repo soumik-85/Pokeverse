@@ -20,6 +20,14 @@
        🔥 Type Quiz
     </h1>
 
+    <h3 id="streak-display" style="
+    color: #ffcb05;
+    font-weight: 700;
+    text-shadow: 0 0 8px rgba(255, 203, 5, 0.5);
+">
+    🔥 Current Streak: 0
+</h3>
+
     <div class="pokemon-question-card">
 
         <img
@@ -104,75 +112,84 @@ style="display:none;">
 
 <script>
 
-const buttons =
-document.querySelectorAll("button");
 
-const correctAnswer =
-document.getElementById(
-    "correct-answer"
-).innerText.trim();
+const answerButtons = document.querySelectorAll(".answer-card");
 
-const modal =
-document.getElementById(
-    "result-overlay"
-);
+const correctAnswer = document
+    .getElementById("correct-answer")
+    .innerText.trim();
 
-const resultTitle =
-document.getElementById(
-    "result-title"
-);
+const modal = document.getElementById("result-overlay");
+const resultTitle = document.getElementById("result-title");
+const resultAnswer = document.getElementById("result-answer");
+const streakDisplay = document.getElementById("streak-display");
 
-const resultAnswer =
-document.getElementById(
-    "result-answer"
-);
+const MODE = "type";
+const STORAGE_KEY = "pokeverse_streak_" + MODE;
 
-buttons.forEach(button => {
+let currentStreak = Number(sessionStorage.getItem(STORAGE_KEY)) || 0;
+let answered = false;
 
-    if(
-        button.id !== "next-btn"
-    ){
+streakDisplay.innerText = "🔥 Current Streak: " + currentStreak;
 
-        button.addEventListener(
-            "click",
-            () => {
+function saveStreak() {
+    fetch("/quiz/leaderboard/save-streak", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            mode: MODE,
+            streak: currentStreak
+        })
+    }).catch(error => {
+        console.error("Could not save streak:", error);
+    });
+}
 
-                const selectedAnswer =
-                button.innerText.trim();
+answerButtons.forEach(button => {
+    button.addEventListener("click", () => {
 
-                if(
-                    selectedAnswer ===
-                    correctAnswer
-                ){
+        if (answered) return;
+        answered = true;
 
-                    resultTitle.innerText =
-                    "✅ Correct!";
+        const selectedAnswer = button.innerText.trim();
 
-                    resultAnswer.innerText =
-                    "It was " +
-                    correctAnswer;
+        if (selectedAnswer === correctAnswer) {
 
-                }
-                else{
+            currentStreak++;
 
-                    resultTitle.innerText =
-                    "❌ Wrong!";
+            sessionStorage.setItem(STORAGE_KEY, currentStreak);
 
-                    resultAnswer.innerText =
-                    "Correct Type: " +
-                    correctAnswer;
+            resultTitle.innerText = "✅ Correct!";
+            resultAnswer.innerText = "Correct Answer: " + correctAnswer;
 
-                }
+            saveStreak();
 
-                modal.style.display =
-                "flex";
+        } else {
 
-            }
-        );
+            currentStreak = 0;
 
-    }
+            sessionStorage.setItem(STORAGE_KEY, 0);
 
+            resultTitle.innerText = "❌ Wrong!";
+            resultAnswer.innerText = "Correct Answer: " + correctAnswer;
+        }
+
+        streakDisplay.innerText = "🔥 Current Streak: " + currentStreak;
+
+        modal.style.display = "flex";
+    });
 });
+
+document.querySelectorAll(".result-modal button").forEach(button => {
+    if (button.innerText.trim() === "Quit") {
+        button.addEventListener("click", () => {
+            sessionStorage.removeItem(STORAGE_KEY);
+        });
+    }
+});
+
 
 </script>
 

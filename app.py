@@ -1,8 +1,16 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, redirect, url_for, flash
+from werkzeug.security import generate_password_hash, check_password_hash
+from urllib.parse import urlparse
 import os
 import requests
 import random
-import sqlite3
+import psycopg2
+from psycopg2.extras import RealDictCursor
+from dotenv import load_dotenv
+
+load_dotenv("config.env")
+
+DATABASE_URL = os.getenv("DATABASE_URL")
 
 all_pokemon_names = []
 
@@ -356,34 +364,63 @@ def home():
 def pokemon_hub():
     return render_template("pokemon_hub.html")
 
+
 @app.route("/pokedex")
 def pokedex():
 
     page = request.args.get("page", 1, type=int)
 
-    limit = 50
+    # Prevent invalid page numbers
+    page = max(1, page)
 
+    limit = 50
     offset = (page - 1) * limit
 
     url = f"https://pokeapi.co/api/v2/pokemon?limit={limit}&offset={offset}"
 
-    response = requests.get(url)
+    response = requests.get(url, timeout=15)
+    response.raise_for_status()
 
     data = response.json()
-
     pokemon_list = data["results"]
 
     all_pokemon = requests.get(
-    "https://pokeapi.co/api/v2/pokemon?limit=1025"
-   ).json()["results"]
+        "https://pokeapi.co/api/v2/pokemon?limit=1025",
+        timeout=15
+    ).json()["results"]
+
+    # Get logged-in user's favourites
+    favourite_ids = set()
+
+    if session.get('user_id'):
+        connection = get_database_connection()
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute("""
+                SELECT pokemon_id
+                FROM user_favourites
+                WHERE user_id = %s
+            """, (session['user_id'],))
+
+            favourite_ids = {
+                row['pokemon_id']
+                for row in cursor.fetchall()
+            }
+
+        finally:
+            cursor.close()
+            connection.close()
 
     return render_template(
         "pokemon.html",
         pokemon_list=pokemon_list,
         page=page,
         start_number=offset,
-        all_pokemon=all_pokemon
-)
+        all_pokemon=all_pokemon,
+        favourite_ids=favourite_ids
+    )
+
 
 @app.route("/random")
 def random_page():
@@ -896,14 +933,606 @@ def evolution_quiz():
 # GAMES
 # ============================================================
 
-DATABASE_PATH = "database/pokeverse.db"
-
 
 def get_database_connection():
-    connection = sqlite3.connect(DATABASE_PATH)
-    connection.row_factory = sqlite3.Row
-    connection.execute("PRAGMA foreign_keys = ON")
+    connection = psycopg2.connect(
+        DATABASE_URL,
+        cursor_factory=RealDictCursor
+    )
     return connection
+
+    
+# ============================================================
+# QUIZ LEADERBOARD - SAVE RECORDS
+# ============================================================
+
+@app.route("/quiz/leaderboard/save-streak", methods=["POST"])
+def save_streak_record():
+
+    if "user_id" not in session:
+        return {"error": "Login required"}, 401
+
+    data = request.get_json(silent=True) or {}
+
+    mode = data.get("mode")
+    streak = data.get("streak")
+
+    valid_modes = ["pokemon", "type", "evolution"]
+
+    if mode not in valid_modes:
+        return {"error": "Invalid quiz mode"}, 400
+
+    try:
+        streak = int(streak)
+    except (TypeError, ValueError):
+        return {"error": "Invalid streak"}, 400
+
+    if streak < 0:
+        return {"error": "Invalid streak"}, 400
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO quiz_streak_leaderboard
+                (user_id, mode, best_streak)
+            VALUES (%s, %s, %s)
+
+            ON CONFLICT (user_id, mode)
+            DO UPDATE SET
+                best_streak = EXCLUDED.best_streak,
+                achieved_at = CURRENT_TIMESTAMP
+
+            WHERE EXCLUDED.best_streak >
+                  quiz_streak_leaderboard.best_streak
+            """,
+            (session["user_id"], mode, streak)
+        )
+
+        connection.commit()
+
+        return {"success": True}, 200
+
+    except Exception:
+        connection.rollback()
+        return {"error": "Could not save streak"}, 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+# ============================================================
+# QUIZ LEADERBOARD - FETCH RANKINGS
+# ============================================================
+
+@app.route("/quiz/leaderboard/<leaderboard_type>")
+def get_leaderboard(leaderboard_type):
+
+    if leaderboard_type not in ["challenge", "pokemon", "type", "evolution"]:
+        return {"error": "Invalid leaderboard type"}, 400
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        if leaderboard_type == "challenge":
+            cursor.execute(
+                """
+                SELECT
+                    u.id AS user_id,
+                    u.username,
+                    u.avatar,
+                    l.best_score,
+                    l.completion_time,
+                    l.achieved_at
+                FROM quiz_challenge_leaderboard l
+                JOIN users u ON u.id = l.user_id
+                ORDER BY
+                    l.best_score DESC,
+                    l.completion_time ASC,
+                    l.achieved_at ASC,
+                    l.user_id ASC
+                """
+            )
+
+        else:
+            cursor.execute(
+                """
+                SELECT
+                    u.id AS user_id,
+                    u.username,
+                    u.avatar,
+                    l.best_streak,
+                    l.achieved_at
+                FROM quiz_streak_leaderboard l
+                JOIN users u ON u.id = l.user_id
+                WHERE l.mode = %s
+                ORDER BY
+                    l.best_streak DESC,
+                    l.achieved_at ASC,
+                    l.user_id ASC
+                """,
+                (leaderboard_type,)
+            )
+
+        all_players = cursor.fetchall()
+
+        current_user_id = session.get("user_id")
+
+        ranked_players = []
+        current_user = None
+
+        for rank, player in enumerate(all_players, start=1):
+            player_data = dict(player)
+            player_data["rank"] = rank
+
+            if current_user_id and player_data["user_id"] == current_user_id:
+                current_user = player_data
+
+            if rank <= 10:
+                ranked_players.append(player_data)
+
+        return {
+            "top_10": ranked_players,
+            "current_user": current_user
+        }
+
+    except Exception:
+        return {"error": "Could not fetch leaderboard"}, 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+@app.route("/quiz/leaderboard/save-challenge", methods=["POST"])
+def save_challenge_record():
+
+    data = request.get_json(silent=True) or {}
+
+    try:
+        score = int(data.get("score"))
+        completion_time = int(data.get("completion_time"))
+    except (TypeError, ValueError):
+        return {"error": "Invalid score or time"}, 400
+
+    if not 0 <= score <= 10 or completion_time <= 0:
+        return {"error": "Invalid challenge result"}, 400
+
+    # Save score for the results page, even if user is logged out
+    session["score"] = score
+
+    # Login is required only for leaderboard submission
+    if "user_id" not in session:
+        return {"error": "Login required"}, 401
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            INSERT INTO quiz_challenge_leaderboard
+                (user_id, best_score, completion_time)
+            VALUES (%s, %s, %s)
+
+            ON CONFLICT (user_id)
+            DO UPDATE SET
+                best_score = EXCLUDED.best_score,
+                completion_time = EXCLUDED.completion_time,
+                achieved_at = CURRENT_TIMESTAMP
+
+            WHERE
+                EXCLUDED.best_score >
+                    quiz_challenge_leaderboard.best_score
+
+                OR (
+                    EXCLUDED.best_score =
+                        quiz_challenge_leaderboard.best_score
+
+                    AND EXCLUDED.completion_time <
+                        quiz_challenge_leaderboard.completion_time
+                )
+            """,
+            (session["user_id"], score, completion_time)
+        )
+
+        connection.commit()
+
+        return {"success": True}, 200
+
+    except Exception:
+        connection.rollback()
+        return {"error": "Could not save challenge result"}, 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form.get('username', '').strip()
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
+
+        # Get selected avatar
+        avatar = request.form.get('avatar', '')
+
+        # Allowed avatars
+        allowed_avatars = {
+            'ash.png',
+            'serena.png',
+            'pikachu.png'
+        }
+
+        if not username or not email or not password:
+            flash('Please fill in all fields.', 'error')
+            return redirect(url_for('register'))
+
+        if len(username) < 3 or len(username) > 30:
+            flash('Username must be between 3 and 30 characters.', 'error')
+            return redirect(url_for('register'))
+
+        if len(password) < 8:
+            flash('Password must contain at least 8 characters.', 'error')
+            return redirect(url_for('register'))
+
+        if password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('register'))
+
+        # Validate avatar
+        if avatar not in allowed_avatars:
+            flash('Please select an avatar.', 'error')
+            return redirect(url_for('register'))
+
+        password_hash = generate_password_hash(password)
+
+        connection = get_database_connection()
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute(
+                """
+                INSERT INTO users
+                (username, email, password_hash, avatar)
+                VALUES (%s, %s, %s, %s)
+                """,
+                (username, email, password_hash, avatar)
+            )
+
+            connection.commit()
+
+            flash(
+                'Account created successfully! Please log in.',
+                'success'
+            )
+            return redirect(url_for('login'))
+
+        except psycopg2.errors.UniqueViolation:
+            connection.rollback()
+            flash('Username or email already exists.', 'error')
+            return redirect(url_for('register'))
+
+        finally:
+            cursor.close()
+            connection.close()
+
+    return render_template('register.html')
+
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        identifier = request.form.get('identifier', '').strip()
+        password = request.form.get('password', '')
+
+        connection = get_database_connection()
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute(
+                """
+                SELECT id, username, email, password_hash, avatar
+                FROM users
+                WHERE LOWER(username) = LOWER(%s)
+                   OR email = LOWER(%s)
+                """,
+                (identifier, identifier)
+            )
+
+            user = cursor.fetchone()
+
+        finally:
+            cursor.close()
+            connection.close()
+
+        if user and check_password_hash(user['password_hash'], password):
+            session.clear()
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['email'] = user['email']
+            session['avatar'] = user['avatar'] or 'pikachu.png'
+
+            return redirect(url_for('home'))
+
+        flash('Invalid username/email or password.', 'error')
+        return redirect(url_for('login'))
+
+    return render_template('login.html')
+
+
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout():
+    # Clear the user's login session
+    session.clear()
+
+    flash('You have been logged out successfully.', 'success')
+
+    # Get the page the user was visiting
+    previous_page = request.referrer
+
+    # Redirect only to a page on our own website
+    if previous_page:
+        parsed_url = urlparse(previous_page)
+
+        if parsed_url.netloc == request.host:
+            return redirect(previous_page)
+
+    # Fallback if there is no valid previous page
+    return redirect(url_for('home'))
+
+
+# ============================================================
+# FAVOURITES
+# ============================================================
+
+
+@app.route('/favourites/toggle/<int:pokemon_id>', methods=['POST'])
+def toggle_favourite(pokemon_id):
+
+    if not session.get('user_id'):
+        return {
+            "success": False,
+            "message": "Please log in first.",
+            "login_required": True
+        }, 401
+
+    if pokemon_id < 1 or pokemon_id > 1025:
+        return {"success": False, "message": "Invalid Pokémon ID."}, 400
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            DELETE FROM user_favourites
+            WHERE user_id = %s AND pokemon_id = %s
+            RETURNING id
+        """, (session['user_id'], pokemon_id))
+
+        removed = cursor.fetchone()
+
+        if removed:
+            action = "removed"
+        else:
+            cursor.execute("""
+                INSERT INTO user_favourites (user_id, pokemon_id)
+                VALUES (%s, %s)
+                ON CONFLICT (user_id, pokemon_id) DO NOTHING
+            """, (session['user_id'], pokemon_id))
+
+            action = "added"
+
+        connection.commit()
+
+        return {
+            "success": True,
+            "action": action,
+            "pokemon_id": pokemon_id
+        }
+
+    except Exception:
+        connection.rollback()
+        return {"success": False, "message": "Could not update favourites."}, 500
+
+    finally:
+        cursor.close()
+        connection.close()
+
+
+
+@app.route('/favourites')
+def favourites():
+
+    # Login required
+    if not session.get('user_id'):
+        flash('Please log in to view your favourites.', 'error')
+        return redirect(url_for('login'))
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute("""
+            SELECT pokemon_id
+            FROM user_favourites
+            WHERE user_id = %s
+            ORDER BY created_at DESC
+        """, (session['user_id'],))
+
+        saved_pokemon = cursor.fetchall()
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    favourite_pokemon = []
+
+    for item in saved_pokemon:
+
+        pokemon_id = item['pokemon_id']
+
+        try:
+            response = requests.get(
+                f"https://pokeapi.co/api/v2/pokemon/{pokemon_id}",
+                timeout=10
+            )
+            response.raise_for_status()
+
+            pokemon_data = response.json()
+            favourite_pokemon.append(pokemon_data)
+
+        except requests.RequestException:
+            continue
+
+    return render_template(
+        'favourites.html',
+        favourite_pokemon=favourite_pokemon
+    )
+
+
+
+@app.route('/update-profile', methods=['POST'])
+def update_profile():
+
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    username = request.form.get('username', '').strip()
+    email = request.form.get('email', '').strip().lower()
+    avatar = request.form.get('avatar', '')
+
+    allowed_avatars = {
+        'ash.png',
+        'serena.png',
+        'pikachu.png'
+    }
+
+    if not username or not email:
+        flash('Username and email are required.', 'error')
+        return redirect(url_for('home'))
+
+    if len(username) < 3 or len(username) > 30:
+        flash('Username must be between 3 and 30 characters.', 'error')
+        return redirect(url_for('home'))
+
+    if avatar not in allowed_avatars:
+        flash('Invalid avatar selection.', 'error')
+        return redirect(url_for('home'))
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            """
+            UPDATE users
+            SET username = %s, email = %s, avatar = %s
+            WHERE id = %s
+            """,
+            (username, email, avatar, session['user_id'])
+        )
+
+        connection.commit()
+
+        session['username'] = username
+        session['email'] = email
+        session['avatar'] = avatar
+
+        flash('Profile updated successfully!', 'success')
+
+    except psycopg2.errors.UniqueViolation:
+        connection.rollback()
+        flash('That username or email is already in use.', 'error')
+
+    except Exception:
+        connection.rollback()
+        flash('Could not update your profile. Please try again.', 'error')
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for('home'))
+
+
+@app.route('/change-password', methods=['POST'])
+def change_password():
+
+    if not session.get('user_id'):
+        return redirect(url_for('login'))
+
+    current_password = request.form.get('current_password', '')
+    new_password = request.form.get('new_password', '')
+    confirm_password = request.form.get('confirm_password', '')
+
+    if len(new_password) < 8:
+        flash('New password must contain at least 8 characters.', 'error')
+        return redirect(url_for('home'))
+
+    if new_password != confirm_password:
+        flash('New passwords do not match.', 'error')
+        return redirect(url_for('home'))
+
+    connection = get_database_connection()
+    cursor = connection.cursor()
+
+    try:
+        cursor.execute(
+            "SELECT password_hash FROM users WHERE id = %s",
+            (session['user_id'],)
+        )
+
+        user = cursor.fetchone()
+
+        if not user or not check_password_hash(
+            user['password_hash'], current_password
+        ):
+            flash('Your current password is incorrect.', 'error')
+            return redirect(url_for('home'))
+
+        if check_password_hash(user['password_hash'], new_password):
+            flash('Choose a password different from your current one.', 'error')
+            return redirect(url_for('home'))
+
+        new_password_hash = generate_password_hash(new_password)
+
+        cursor.execute(
+            """
+            UPDATE users
+            SET password_hash = %s
+            WHERE id = %s
+            """,
+            (new_password_hash, session['user_id'])
+        )
+
+        connection.commit()
+
+        flash('Password changed successfully!', 'success')
+
+    except Exception:
+        connection.rollback()
+        flash('Could not change your password. Please try again.', 'error')
+
+    finally:
+        cursor.close()
+        connection.close()
+
+    return redirect(url_for('home'))
 
 
 @app.route("/games")
@@ -937,7 +1566,7 @@ def generation_page(generation):
     cursor.execute("""
         SELECT *
         FROM games
-        WHERE generation = ?
+        WHERE generation = %s
         ORDER BY display_order
     """, (generation,))
 
@@ -968,7 +1597,7 @@ def game_details(slug):
     cursor.execute("""
         SELECT *
         FROM games
-        WHERE slug = ?
+        WHERE slug = %s
     """, (slug,))
 
     game = cursor.fetchone()
@@ -984,7 +1613,7 @@ def game_details(slug):
     cursor.execute("""
         SELECT feature
         FROM game_features
-        WHERE game_slug = ?
+        WHERE game_slug = %s
         ORDER BY id
     """, (slug,))
 
@@ -1001,7 +1630,7 @@ def game_details(slug):
             leader_name,
             challenge_order
         FROM game_challenges
-        WHERE game_slug = ?
+        WHERE game_slug = %s
         ORDER BY challenge_order
     """, (slug,))
 
@@ -1014,7 +1643,7 @@ def game_details(slug):
     cursor.execute("""
         SELECT pokemon_name
         FROM game_starters
-        WHERE game_slug = ?
+        WHERE game_slug = %s
         ORDER BY id
     """, (slug,))
 
@@ -1027,7 +1656,7 @@ def game_details(slug):
     cursor.execute("""
         SELECT pokemon_name
         FROM game_legendaries
-        WHERE game_slug = ?
+        WHERE game_slug = %s
         ORDER BY id
     """, (slug,))
 
@@ -1045,7 +1674,7 @@ def game_details(slug):
         FROM related_games r
         JOIN games g
             ON g.slug = r.related_slug
-        WHERE r.game_slug = ?
+        WHERE r.game_slug = %s
         ORDER BY g.generation, g.display_order
     """, (slug,))
 
@@ -1089,4 +1718,4 @@ def timeline():
     )
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)

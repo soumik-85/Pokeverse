@@ -1,15 +1,12 @@
 function scrollToFeatures() {
+    const features = document.querySelector(".features-grid");
 
-    const explore = document.getElementById("explore");
-
-    if (explore) {
-
-        explore.scrollIntoView({
-            behavior: "smooth"
+    if (features) {
+        features.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
         });
-
     }
-
 }
 
 
@@ -67,3 +64,89 @@ if(searchInput && suggestions){
     });
 
 }
+
+// Your existing JavaScript code above...
+
+// Profile Dropdown
+window.scrollToFeatures = function () {
+
+    const features = document.getElementById("explore");
+
+    if (features) {
+        features.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+};
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const avatarBtn = document.getElementById("avatarBtn");
+    const dropdown = document.getElementById("profileDropdown");
+
+    const openProfileBtn = document.getElementById("openProfileModal");
+    const profileModal = document.getElementById("profileModal");
+    const closeProfileBtn = document.getElementById("closeProfileModal");
+
+    // Open and close profile dropdown
+    if (avatarBtn && dropdown) {
+
+        avatarBtn.addEventListener("click", function (event) {
+            event.stopPropagation();
+            dropdown.hidden = !dropdown.hidden;
+        });
+
+        document.addEventListener("click", function (event) {
+            if (!avatarBtn.contains(event.target) &&
+                !dropdown.contains(event.target)) {
+                dropdown.hidden = true;
+            }
+        });
+
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape") {
+                dropdown.hidden = true;
+            }
+        });
+    }
+
+    // Open profile modal when username is clicked
+    if (openProfileBtn && profileModal) {
+
+        openProfileBtn.addEventListener("click", function () {
+            dropdown.hidden = true;
+            profileModal.hidden = false;
+            document.body.style.overflow = "hidden";
+        });
+
+    }
+
+    // Close profile modal
+    if (closeProfileBtn && profileModal) {
+
+        closeProfileBtn.addEventListener("click", function () {
+            profileModal.hidden = true;
+            document.body.style.overflow = "";
+        });
+
+        // Close when clicking outside the modal
+        profileModal.addEventListener("click", function (event) {
+            if (event.target === profileModal) {
+                profileModal.hidden = true;
+                document.body.style.overflow = "";
+            }
+        });
+
+        // Close with Escape key
+        document.addEventListener("keydown", function (event) {
+            if (event.key === "Escape" && !profileModal.hidden) {
+                profileModal.hidden = true;
+                document.body.style.overflow = "";
+            }
+        });
+
+    }
+
+});

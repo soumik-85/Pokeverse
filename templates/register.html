@@ -1,0 +1,85 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join PokeVerse</title>
+</head>
+<body>
+    <a href="{{ url_for('home') }}" class="auth-home-btn">
+    <span>←</span> Home
+</a>
+    <div class="card">
+        <h1>POKEVERSE</h1>
+        <p class="subtitle">Begin your Pokémon journey!</p>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+        <form method="POST" action="{{ url_for('register') }}">
+            <label>Trainer Username</label>
+            <input type="text" name="username" maxlength="30"
+                   autocomplete="username" required>
+
+            <label>Email Address</label>
+            <input type="email" name="email"
+                   autocomplete="email" required>
+
+                   <div class="avatar-selection">
+    <label>Select Your Avatar</label>
+
+    <div class="avatar-options">
+
+        <label class="avatar-option">
+            <input type="radio" name="avatar"
+                   value="ash.png" required>
+            <img src="{{ url_for('static', filename='images/avatars/ash.png') }}"
+                 alt="Male Trainer">
+            <span>Male</span>
+        </label>
+
+        <label class="avatar-option">
+            <input type="radio" name="avatar"
+                   value="serena.png">
+            <img src="{{ url_for('static', filename='images/avatars/serena.png') }}"
+                 alt="Female Trainer">
+            <span>Female</span>
+        </label>
+
+        <label class="avatar-option">
+            <input type="radio" name="avatar"
+                   value="pikachu.png">
+            <img src="{{ url_for('static', filename='images/avatars/pikachu.png') }}"
+                 alt="Pikachu">
+            <span>Pikachu</span>
+        </label>
+
+    </div>
+</div>
+
+            <label>Password</label>
+            <input type="password" name="password"
+                   minlength="8" autocomplete="new-password" required>
+
+            <label>Confirm Password</label>
+            <input type="password" name="confirm_password"
+                   minlength="8" autocomplete="new-password" required>
+
+            <button type="submit">Create Account</button>
+        </form>
+
+        <p class="footer">
+            Already a trainer? <a href="{{ url_for('login') }}">Login</a>
+        </p>
+    </div>
+</body>
+</html>

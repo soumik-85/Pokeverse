@@ -1,0 +1,115 @@
+
+/* =================================
+   POKEVERSE - MY FAVOURITES PAGE
+================================= */
+
+.favourites-page {
+    max-width: 1400px;
+    margin: 100px auto 50px;
+    padding: 20px;
+}
+
+.favourites-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.favourites-header h1 {
+    color: #ffcb05;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.favourites-header p {
+    color: #aaa;
+    font-size: 16px;
+}
+
+.favourites-count {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 18px;
+    border-radius: 20px;
+    background: #252525;
+    color: #ffcb05;
+    font-size: 14px;
+}
+
+.favourites-grid .pokemon-card {
+    position: relative;
+}
+
+.favourites-grid .favourite-heart {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    color: #ff4545;
+}
+
+.favourites-grid .favourite-heart:hover {
+    transform: scale(1.15);
+}
+
+.favourites-empty {
+    text-align: center;
+    max-width: 500px;
+    margin: 80px auto;
+    padding: 35px 25px;
+    background: #1b1b1b;
+    border-radius: 20px;
+}
+
+.empty-heart {
+    font-size: 65px;
+    color: #ff4545;
+    margin-bottom: 15px;
+}
+
+.favourites-empty h2 {
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.favourites-empty p {
+    color: #aaa;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+.explore-pokemon-btn {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #ffcb05;
+    color: #111;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.2s ease;
+}
+
+.explore-pokemon-btn:hover {
+    background: #e6b800;
+    transform: translateY(-2px);
+}
+
+@media (max-width: 600px) {
+
+    .favourites-page {
+        margin-top: 100px;
+        padding: 12px;
+    }
+
+    .favourites-header h1 {
+        font-size: 27px;
+    }
+
+    .favourites-header p {
+        font-size: 14px;
+    }
+
+    .favourites-empty {
+        margin: 50px auto;
+        padding: 25px 18px;
+    }
+}

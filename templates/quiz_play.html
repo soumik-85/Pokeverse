@@ -46,99 +46,43 @@
 
     </h2>
 
-    <div class="answer-grid">
 
-        <form method="POST" action="/quiz/check">
-
-    <input
-    type="hidden"
-    name="selected_answer"
-    value="{{ question.options[0] }}">
-
-    <input
-    type="hidden"
-    name="correct_answer"
-    value="{{ question.correct_answer }}">
+<div class="answer-grid">
 
     <button
-    type="submit"
-    class="answer-card"
-    id="option0">
-
+        type="button"
+        class="answer-card"
+        id="option0">
         {{ question.options[0] }}
-
     </button>
 
-</form>
-
-<form method="POST" action="/quiz/check">
-
-    <input
-    type="hidden"
-    name="selected_answer"
-    value="{{ question.options[1] }}">
-
-    <input
-    type="hidden"
-    name="correct_answer"
-    value="{{ question.correct_answer }}">
-
     <button
-    type="submit"
-    class="answer-card"
-    id="option1">
-
+        type="button"
+        class="answer-card"
+        id="option1">
         {{ question.options[1] }}
-
     </button>
 
-</form>
-
-<form method="POST" action="/quiz/check">
-
-    <input
-    type="hidden"
-    name="selected_answer"
-    value="{{ question.options[2] }}">
-
-    <input
-    type="hidden"
-    name="correct_answer"
-    value="{{ question.correct_answer }}">
-
     <button
-    type="submit"
-    class="answer-card"
-    id="option2">
-
+        type="button"
+        class="answer-card"
+        id="option2">
         {{ question.options[2] }}
-
     </button>
-
-</form>
-
-<form method="POST" action="/quiz/check">
-
-    <input
-    type="hidden"
-    name="selected_answer"
-    value="{{ question.options[3] }}">
-
-    <input
-    type="hidden"
-    name="correct_answer"
-    value="{{ question.correct_answer }}">
 
     <button
-    type="submit"
-    class="answer-card"
-    id="option3">
-
+        type="button"
+        class="answer-card"
+        id="option3">
         {{ question.options[3] }}
-
     </button>
 
-</form>  
+    <div id="correct-answer" hidden>
+        {{ question.correct_answer }}
+    </div>
+
+</div>
+
 
 <div id="correct-answer" hidden>
 
@@ -177,14 +121,18 @@
 </div>
 
 <script>
-    const questions = {{ questions | tojson }};
+    const quizQuestions = {{ questions | tojson }};
 
     let currentQuestion = 0;
+    let score = 0;
+    let answered = false;
+
+    const challengeStartTime = Date.now();
 
     function loadQuestion(index){
 
     const question =
-    questions[index];
+    quizQuestions[index];
 
     document.getElementById(
     "question-text"
@@ -232,12 +180,9 @@
 
 }
 
-
 loadQuestion(0);
 
-let score = 0;
-
-console.log(questions);   
+console.log(quizQuestions);   
 
 const answerCards =
 document.querySelectorAll(".answer-card");
@@ -248,7 +193,10 @@ answerCards.forEach(card => {
 
         event.preventDefault();
 
-        const selectedAnswer =
+if (answered) return;
+answered = true;
+
+const selectedAnswer =
         card.innerText.trim();
 
         const modal =
@@ -331,11 +279,13 @@ nextButton.addEventListener(
 
         if(currentQuestion < 9){
 
-            currentQuestion++;
+           currentQuestion++;
 
-            loadQuestion(
-                currentQuestion
-            );
+answered = false;
+
+loadQuestion(
+    currentQuestion
+);
 
             document.getElementById(
                 "result-overlay"
@@ -348,14 +298,32 @@ nextButton.addEventListener(
 
             console.log("Final Score:", score);
 
-            fetch(`/quiz/save-score/${score}`)
-            .then(() => {
+            const completionTime = Math.max(
+    1,
+    Math.round((Date.now() - challengeStartTime) / 1000)
+);
 
-                window.location.href =
-                "/quiz/results";
+fetch("/quiz/leaderboard/save-challenge", {
+    method: "POST",
+    headers: {
+        "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+        score: score,
+        completion_time: completionTime
+    })
+})
+.then(response => {
+    if (!response.ok && response.status !== 401) {
+        throw new Error("Could not save challenge result");
+    }
 
-            });
-
+    window.location.href = "/quiz/results";
+})
+.catch(error => {
+    console.error(error);
+    window.location.href = "/quiz/results";
+});
         }
 
     }

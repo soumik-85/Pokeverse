@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Favourites | PokeVerse</title>
+
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+    <link rel="stylesheet"
+      href="{{ url_for('static', filename='css/favourites.css') }}">  
+</head>
+
+<body>
+
+    <a href="{{ url_for('pokedex') }}" class="back-btn">
+        ← National Pokédex
+    </a>
+
+    <main class="favourites-page">
+
+        <header class="favourites-header">
+            <h1>♥ My Favourites</h1>
+            <p>Your personally collected Pokémon</p>
+            <span class="favourites-count">
+                {{ favourite_pokemon|length }} Pokémon saved
+            </span>
+        </header>
+
+        {% if favourite_pokemon %}
+
+            <div class="pokemon-grid favourites-grid" id="favouritesGrid">
+
+                {% for pokemon in favourite_pokemon %}
+
+                    <div class="pokemon-card pokemon-item"
+                         id="favourite-{{ pokemon.id }}">
+
+                        <button
+                            type="button"
+                            class="favourite-heart active"
+                            data-pokemon-id="{{ pokemon.id }}"
+                            aria-label="Remove {{ pokemon.name }} from favourites"
+                            aria-pressed="true">
+                            ♥
+                        </button>
+
+                        <a href="/pokemon/{{ pokemon.name }}"
+                           class="pokemon-link">
+
+                            <img
+                                src="{{ pokemon.sprites.front_default or '' }}"
+                                alt="{{ pokemon.name }}"
+                                loading="lazy">
+
+                            <p class="pokemon-number">
+                                #{{ "%03d"|format(pokemon.id) }}
+                            </p>
+
+                            <h3>{{ pokemon.name.title() }}</h3>
+
+                        </a>
+
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="favourites-empty" id="emptyFavourites">
+
+                <div class="empty-heart">♡</div>
+
+                <h2>No favourites yet!</h2>
+
+                <p>
+                    You haven't added any Pokémon to your favourites.
+                    Explore the Pokédex and save the ones you love.
+                </p>
+
+                <a href="{{ url_for('pokedex') }}"
+                   class="explore-pokemon-btn">
+                    Explore Pokémon
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </main>
+
+    <script>
+    document.querySelectorAll('.favourite-heart').forEach(button => {
+
+        button.addEventListener('click', async function () {
+
+            if (this.disabled) return;
+
+            const pokemonId = this.dataset.pokemonId;
+            const card = document.getElementById(`favourite-${pokemonId}`);
+
+            this.disabled = true;
+
+            // Remove card immediately for a responsive experience
+            card.remove();
+
+            try {
+
+                const response = await fetch(
+                    `/favourites/toggle/${pokemonId}`,
+                    { method: 'POST' }
+                );
+
+                const result = await response.json();
+
+                if (response.status === 401 && result.login_required) {
+                    window.location.href = "{{ url_for('login') }}";
+                    return;
+                }
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'Request failed');
+                }
+
+                updateFavouritesCount();
+
+            } catch (error) {
+
+                console.error('Favourite error:', error);
+
+                // Restore the card if the database update fails
+                document.getElementById('favouritesGrid')
+                    ?.appendChild(card);
+
+                this.disabled = false;
+
+                alert('Could not remove this Pokémon. Please try again.');
+
+                return;
+            }
+
+        });
+
+    });
+
+    function updateFavouritesCount() {
+
+        const grid = document.getElementById('favouritesGrid');
+        const count = grid
+            ? grid.querySelectorAll('.pokemon-card').length
+            : 0;
+
+        const countLabel = document.querySelector('.favourites-count');
+
+        if (countLabel) {
+            countLabel.textContent = `${count} Pokémon saved`;
+        }
+
+        if (count === 0 && grid) {
+
+            grid.remove();
+
+            const emptyState = document.createElement('div');
+            emptyState.className = 'favourites-empty';
+
+            emptyState.innerHTML = `
+                <div class="empty-heart">♡</div>
+                <h2>No favourites yet!</h2>
+                <p>
+                    You haven't added any Pokémon to your favourites.
+                    Explore the Pokédex and save the ones you love.
+                </p>
+                <a href="{{ url_for('pokedex') }}"
+                   class="explore-pokemon-btn">
+                    Explore Pokémon
+                </a>
+            `;
+
+            document.querySelector('.favourites-page')
+                .appendChild(emptyState);
+        }
+    }
+    </script>
+
+</body>
+</html>

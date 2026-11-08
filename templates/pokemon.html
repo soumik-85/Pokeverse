@@ -1,18 +1,27 @@
+
 <!DOCTYPE html>
 <html>
 
 <head>
-    <title>Pokédex</title>
+    <title>National Pokédex</title>
 
     <link rel="stylesheet"
         href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
-   <body>
+<body>
 
     <a href="/pokemon" class="back-btn">
-    ← Back
-</a>
+        ← Back
+    </a>
+
+    <!-- Favourites Button -->
+    <a href="{{ url_for('favourites') }}"
+       class="pokedex-favourites-btn">
+
+        ♥ Favourites
+
+    </a>
 
     <h1 class="page-title">
         National Pokédex
@@ -20,73 +29,151 @@
 
     <div class="search-container">
 
-    <input
-        type="text"
-        placeholder="Search Pokémon..."
-        class="search-bar"
-        id="searchInput">
+        <input
+            type="text"
+            placeholder="Search Pokémon..."
+            class="search-bar"
+            id="searchInput">
 
-    <div id="suggestions" class="suggestions-box"></div>
-
-</div>
-
-    <div class="pokemon-grid">
-
-    {% for pokemon in pokemon_list %}
-
-    <a href="/pokemon/{{ pokemon.name }}?page={{ page }}" class="pokemon-link"> 
-
-    <div class="pokemon-card pokemon-item">
-
-        <img
-            src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ start_number + loop.index }}.png"
-            alt="{{ pokemon.name }}">
-
-        <p class="pokemon-number">
-          #{{ "%03d"|format(start_number + loop.index) }}
-        </p>
-
-      <h3>{{ pokemon.name.title() }}</h3>
+        <div id="suggestions" class="suggestions-box"></div>
 
     </div>
 
-    </a>
+    <div class="pokemon-grid">
 
-    {% endfor %}
+        {% for pokemon in pokemon_list %}
 
-</div>
+        {% set pokemon_id = start_number + loop.index %}
 
-<script>
-const pokemonList = [
+        <div class="pokemon-card pokemon-item">
 
- {% for pokemon in all_pokemon %}
-"{{ pokemon.name }}",
- {% endfor %}
+            <!-- Favourite Button -->
+            <button
+    type="button"
+    class="favourite-heart {% if pokemon_id in favourite_ids %}active{% endif %}"
+    data-pokemon-id="{{ pokemon_id }}"
+    aria-label="Toggle favourite"
+    aria-pressed="{{ 'true' if pokemon_id in favourite_ids else 'false' }}">
 
- ];
-</script>
-
-<script src="{{ url_for('static', filename='js/script.js') }}"></script>
-<div class="pagination">
-
-    {% if page > 1 %}
-        <a href="/pokedex?page={{ page - 1 }}" class="page-btn">
-            ← Previous
-        </a>
+    {% if pokemon_id in favourite_ids %}
+        ♥
+    {% else %}
+        ♡
     {% endif %}
 
-    <span class="page-number">
-        Page {{ page }}
-    </span>
+</button>
 
-    <a href="/pokedex?page={{ page + 1 }}" class="page-btn">
-        Next →
-    </a>
+            <!-- Pokémon Details Link -->
+            <a href="/pokemon/{{ pokemon.name }}?page={{ page }}"
+               class="pokemon-link">
 
-</div> 
+                <img
+                    src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/{{ pokemon_id }}.png"
+                    alt="{{ pokemon.name }}">
+
+                <p class="pokemon-number">
+                    #{{ "%03d"|format(pokemon_id) }}
+                </p>
+
+                <h3>{{ pokemon.name.title() }}</h3>
+
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+<script>
+document.querySelectorAll('.favourite-heart').forEach(button => {
+
+    button.addEventListener('click', async function () {
+
+        const pokemonId = this.dataset.pokemonId;
+        const wasActive = this.classList.contains('active');
+
+        if (this.disabled) return;
+
+        // Update heart immediately
+        const isActive = !wasActive;
+
+        this.classList.toggle('active', isActive);
+        this.innerHTML = isActive ? '♥' : '♡';
+        this.setAttribute('aria-pressed', String(isActive));
+
+        this.disabled = true;
+
+        try {
+
+            const response = await fetch(
+                `/favourites/toggle/${pokemonId}`,
+                { method: 'POST' }
+            );
+
+            const result = await response.json();
+
+            if (response.status === 401 && result.login_required) {
+                window.location.href = "{{ url_for('login') }}";
+                return;
+            }
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || 'Request failed');
+            }
+
+        } catch (error) {
+
+            console.error('Favourite error:', error);
+
+            // Revert if database update fails
+            this.classList.toggle('active', wasActive);
+            this.innerHTML = wasActive ? '♥' : '♡';
+            this.setAttribute('aria-pressed', String(wasActive));
+
+            alert('Could not update favourites. Please try again.');
+
+        } finally {
+
+            this.disabled = false;
+
+        }
+
+    });
+
+});
+</script>
+
+
+    <script>
+        const pokemonList = [
+
+            {% for pokemon in all_pokemon %}
+                "{{ pokemon.name }}",
+            {% endfor %}
+
+        ];
+    </script>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    <div class="pagination">
+
+        {% if page > 1 %}
+            <a href="/pokedex?page={{ page - 1 }}" class="page-btn">
+                ← Previous
+            </a>
+        {% endif %}
+
+        <span class="page-number">
+            Page {{ page }}
+        </span>
+
+        <a href="/pokedex?page={{ page + 1 }}" class="page-btn">
+            Next →
+        </a>
+
+    </div>
 
 </body>
-
-
-
 </html>

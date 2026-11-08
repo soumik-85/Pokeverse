@@ -8,11 +8,13 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1.0">
 
-    <title>PokeVerse</title>
+    <title>PokeVerse - Your Ultimate Pokémon World</title>
 
     <link rel="stylesheet"
           href="{{ url_for('static', filename='css/home.css') }}">
-
+    <link rel="icon"
+      type="image/svg+xml"
+      href="{{ url_for('static', filename='images/pokeball.png') }}">
 </head>
 
 <body>
@@ -29,67 +31,244 @@
 
     </div>
 
+
 <ul>
-
     <li><a class="active" href="/">Home</a></li>
-
     <li><a href="/pokemon">Pokémon</a></li>
-
     <li><a href="/games">Games</a></li>
-
     <li><a href="/quiz">Quiz</a></li>
-
     <li><a href="/timeline">Timeline</a></li>
 
-</ul>
+    
+{% if session.get('user_id') %}
 
-</nav>
+<li class="nav-profile">
 
-<!-- ================= HERO ================= -->
+    <button class="avatar-btn" id="avatarBtn" type="button"
+            aria-label="Open profile menu">
+        <img
+            src="{{ url_for('static', filename='images/avatars/' + session.get('avatar', 'pikachu.png')) }}"
+            alt="Profile Avatar">
+    </button>
 
-<section class="hero">
+    <!-- Small Profile Dropdown -->
+    <div class="profile-dropdown" id="profileDropdown" hidden>
 
-    <div class="hero-left">
+        <button type="button" id="openProfileModal"
+                class="dropdown-profile-option">
+            <i class="fa-solid fa-user"></i>
+            <span>{{ session.get('username') }}</span>
+        </button>
 
-        <img src="{{ url_for('static', filename='images/ash-pikachu.png') }}"
-             class="hero-image">
+        <div class="dropdown-divider"></div>
+
+        <a href="{{ url_for('logout') }}" class="dropdown-logout">
+            <i class="fa-solid fa-right-from-bracket"></i>
+            <span>Logout</span>
+        </a>
 
     </div>
 
-    <div class="hero-right">
+</li>
 
-        <h1><span class="yellow">POKÉ</span>VERSE</h1>
+{% else %}
 
-        <h2>
+<li>
+    <a href="{{ url_for('login') }}" class="nav-auth-btn">
+        Login / Sign Up
+    </a>
+</li>
 
-            Your Ultimate Pokémon World
+{% endif %}
 
-        </h2>
+</ul>
 
-        <p>
 
-            Discover every Pokémon, explore every region,
+</nav>
 
-            master every type, uncover evolution chains
+{% if session.get('user_id') %}
 
-            and begin your adventure.
+<div class="profile-modal-overlay" id="profileModal" hidden>
 
-        </p>
+    <div class="profile-modal">
 
-        <div class="hero-buttons">
+        <button class="profile-close" id="closeProfileModal"
+                type="button">&times;</button>
 
-            <button class="explore-btn" onclick="scrollToFeatures()">
+        <div class="profile-modal-header">
 
-                Start Exploring
+            <img
+                src="{{ url_for('static', filename='images/avatars/' + session.get('avatar', 'pikachu.png')) }}"
+                alt="Trainer Avatar"
+                id="profilePreview">
 
-            </button>
+            <h2>Trainer Profile</h2>
 
+            <p>Manage your PokeVerse account</p>
+
+        </div>
+
+        <div class="profile-modal-body">
+
+            <!-- PROFILE INFORMATION -->
+
+            <form action="{{ url_for('update_profile') }}"
+                  method="POST"
+                  class="profile-form">
+
+                <h3>Account Details</h3>
+
+                <label for="profileUsername">Username</label>
+
+                <input
+                    type="text"
+                    id="profileUsername"
+                    name="username"
+                    value="{{ session.get('username', '') }}"
+                    minlength="3"
+                    maxlength="30"
+                    required>
+
+                <label for="profileEmail">Email Address</label>
+
+                <input
+                    type="email"
+                    id="profileEmail"
+                    name="email"
+                    value="{{ session.get('email', '') }}"
+                    required>
+
+                <label>Choose Your Avatar</label>
+
+                <div class="avatar-selection">
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar"
+                               value="ash.png"
+                               {% if session.get('avatar') == 'ash.png' %}checked{% endif %}>
+                        <img src="{{ url_for('static', filename='images/avatars/ash.png') }}"
+                             alt="Ash">
+                        <span>Ash</span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar"
+                               value="serena.png"
+                               {% if session.get('avatar') == 'serena.png' %}checked{% endif %}>
+                        <img src="{{ url_for('static', filename='images/avatars/serena.png') }}"
+                             alt="Serena">
+                        <span>Serena</span>
+                    </label>
+
+                    <label class="avatar-option">
+                        <input type="radio" name="avatar"
+                               value="pikachu.png"
+                               {% if session.get('avatar') == 'pikachu.png' %}checked{% endif %}>
+                        <img src="{{ url_for('static', filename='images/avatars/pikachu.png') }}"
+                             alt="Pikachu">
+                        <span>Pikachu</span>
+                    </label>
+
+                </div>
+
+                <button type="submit" class="profile-save-btn">
+                    Save Profile
+                </button>
+
+            </form>
+
+            <div class="profile-section-divider"></div>
+
+            <!-- CHANGE PASSWORD -->
+
+            <form action="{{ url_for('change_password') }}"
+                  method="POST"
+                  class="profile-form">
+
+                <h3>Change Password</h3>
+
+                <label for="currentPassword">Current Password</label>
+
+                <input
+                    type="password"
+                    id="currentPassword"
+                    name="current_password"
+                    autocomplete="current-password"
+                    required>
+
+                <label for="newPassword">New Password</label>
+
+                <input
+                    type="password"
+                    id="newPassword"
+                    name="new_password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required>
+
+                <label for="confirmPassword">Confirm New Password</label>
+
+                <input
+                    type="password"
+                    id="confirmPassword"
+                    name="confirm_password"
+                    minlength="8"
+                    autocomplete="new-password"
+                    required>
+
+                <button type="submit" class="profile-save-btn">
+                    Update Password
+                </button>
+
+            </form>
+
+        </div>
+
+        <div class="profile-modal-footer">
+
+            <a href="{{ url_for('logout') }}" class="profile-logout-btn">
+                Logout
+            </a>
 
         </div>
 
     </div>
 
+</div>
+
+{% endif %}
+
+<!-- ================= HERO ================= -->
+
+
+<section class="hero">
+
+    <div class="hero-left">
+        <img src="{{ url_for('static', filename='images/ash-pikachu.png') }}"
+             alt="Ash and Pikachu"
+             class="hero-image">
+    </div>
+
+    <div class="hero-content">
+        <h1><span class="yellow">POKÉ</span>VERSE</h1>
+
+        <h2>Your Ultimate Pokémon World</h2>
+
+        <p>
+            Discover every Pokémon, explore every region,
+            master every type, uncover evolution chains
+            and begin your adventure.
+        </p>
+
+        <div class="hero-buttons">
+            <button class="explore-btn" onclick="scrollToFeatures()">
+                Start Exploring
+            </button>
+        </div>
+    </div>
+
 </section>
+
 
 <!-- ================= STATS ================= -->
 
@@ -219,7 +398,7 @@
 
 <!-- ================= FEATURE CARDS ================= -->
 
-<section class="feature-grid">
+<section class="feature-grid" id="explore">
 
 <!-- Pokemon -->
 
